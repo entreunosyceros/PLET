@@ -140,4 +140,18 @@ class ServicioAventurasTest {
         assertEquals(5, aventuras.obtenerDescuentoPermanentePorcentaje());
         assertTrue(aventuras.obtenerTituloAgente().contains("Veterano"));
     }
+
+    @Test
+    void rangoCreditoCambiaTituloAlAlcanzarUmbral() {
+        var aventurasRico = new ServicioAventuras(posicion, 150);
+        assertEquals("Carterista temporal certificado", aventurasRico.obtenerTituloAgente());
+        assertEquals(com.paradmanana.viajes.dominio.aventura.RangoCredito.PLATA,
+                aventurasRico.obtenerRangoCredito());
+        assertFalse(aventurasRico.tieneSalonVip());
+
+        var aventurasVip = new ServicioAventuras(posicion, 500);
+        assertTrue(aventurasVip.tieneSalonVip());
+        assertTrue(aventurasVip.tieneNavDorado());
+        assertEquals("Miembro Platinum del Salón VIP", aventurasVip.obtenerTituloAgente());
+    }
 }

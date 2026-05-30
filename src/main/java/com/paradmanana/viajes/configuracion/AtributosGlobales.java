@@ -2,7 +2,9 @@ package com.paradmanana.viajes.configuracion;
 
 import com.paradmanana.viajes.dominio.Era;
 import com.paradmanana.viajes.dominio.LineaTemporal;
+import com.paradmanana.viajes.dominio.MonedaTemporal;
 import com.paradmanana.viajes.dominio.NormasPresente;
+import com.paradmanana.viajes.dominio.aventura.RangoCredito;
 import com.paradmanana.viajes.servicio.ServicioAventuras;
 import com.paradmanana.viajes.servicio.ServicioBilletesVuelta;
 import com.paradmanana.viajes.servicio.ServicioCarrito;
@@ -89,6 +91,36 @@ public class AtributosGlobales {
     @ModelAttribute("creditosViajero")
     public int creditosViajero() {
         return servicioAventuras.obtenerCreditos();
+    }
+
+    @ModelAttribute("monedaNombre")
+    public String monedaNombre() {
+        return MonedaTemporal.NOMBRE;
+    }
+
+    @ModelAttribute("monedaAbrev")
+    public String monedaAbrev() {
+        return MonedaTemporal.ABREVIATURA;
+    }
+
+    @ModelAttribute("rangoCredito")
+    public RangoCredito rangoCredito() {
+        return servicioAventuras.obtenerRangoCredito();
+    }
+
+    @ModelAttribute("progresoRangoCredito")
+    public int progresoRangoCredito() {
+        return servicioAventuras.obtenerProgresoRangoCredito();
+    }
+
+    @ModelAttribute("salonVipDesbloqueado")
+    public boolean salonVipDesbloqueado() {
+        return servicioAventuras.tieneSalonVip();
+    }
+
+    @ModelAttribute("navDorado")
+    public boolean navDorado() {
+        return servicioAventuras.tieneNavDorado();
     }
 
     @ModelAttribute("inventarioViajero")

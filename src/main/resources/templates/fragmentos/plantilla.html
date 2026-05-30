@@ -16,7 +16,7 @@
 </head>
 
 <nav th:fragment="navegacion" class="navbar"
-     th:classappend="${paradojaActiva} ? ' navbar--paradoja' : ''">
+     th:classappend="${paradojaActiva ? ' navbar--paradoja' : (navDorado ? ' navbar--dorado' : '')}">
     <!-- cantidadCarrito viene de AtributosGlobales (@ControllerAdvice) -->
     <a href="/" class="logo">
         <img class="logo-img" th:src="@{/img/logo.png}" alt="Para luego es tarde — Viajes a tiempo S.M.L."/>
@@ -36,6 +36,7 @@
             <span th:if="${aventurasDisponibles > 0}" class="carrito-badge" th:text="${aventurasDisponibles}">0</span>
         </a>
         <a href="/coleccion">🏛️ Colección</a>
+        <a th:if="${salonVipDesbloqueado}" href="/salon-vip" class="nav-salon-vip">🥂 Salón VIP</a>
         <a href="/logica-temporal">🧠 Lógica temporal</a>
         <a href="/carrito" class="carrito-link">
             🛒 Carrito
@@ -140,15 +141,38 @@
     </ul>
 </aside>
 
-<!-- Créditos, inventario y paradojas del libro-juego -->
+<!-- Gallifantes Temporales, inventario y paradojas del libro-juego -->
 <div th:fragment="panelViajero" class="panel-viajero">
     <div class="panel-viajero__stat">
         <span class="panel-viajero__label">🎖️ Título</span>
         <strong th:text="${tituloAgente}">Viajero temporal</strong>
     </div>
-    <div class="panel-viajero__stat">
-        <span class="panel-viajero__label">💰 Créditos</span>
-        <strong th:text="${creditosViajero}">0</strong>
+    <div class="panel-viajero__stat panel-viajero__stat--moneda"
+         th:classappend="${rangoCredito.ordinal() >= 1} ? ' panel-viajero__stat--creditos-brillantes' : ''">
+        <span class="panel-viajero__label">💰 <span th:text="${monedaNombre}">Gallifantes Temporales</span></span>
+        <strong th:text="${creditosViajero} + ' ' + ${monedaAbrev}">0 GT</strong>
+    </div>
+    <div class="panel-viajero__rango" th:if="${rangoCredito.siguiente().isPresent()}">
+        <div class="panel-viajero__rango-cabecera">
+            <span class="panel-viajero__label">📈 Rango temporal</span>
+            <strong th:text="${rangoCredito.titulo}">Viajero temporal</strong>
+        </div>
+        <div class="panel-viajero__barra" role="progressbar"
+             th:attr="aria-valuenow=${progresoRangoCredito},aria-valuemin=0,aria-valuemax=100">
+            <div class="panel-viajero__barra-fill" th:style="'width:' + ${progresoRangoCredito} + '%'"></div>
+        </div>
+        <p class="panel-viajero__rango-meta">
+            Siguiente hito:
+            <strong th:text="${rangoCredito.siguiente().get().titulo}">Magnate</strong>
+            (<span th:text="${rangoCredito.siguiente().get().umbralMinimo} + ' ' + ${monedaAbrev}">100 GT</span>)
+        </p>
+        <p class="panel-viajero__rango-perk" th:if="${rangoCredito.siguiente().get().descripcionPerk != null}"
+           th:text="'🔓 ' + ${rangoCredito.siguiente().get().descripcionPerk}">Próximo perk</p>
+    </div>
+    <div class="panel-viajero__rango panel-viajero__rango--max" th:if="${!rangoCredito.siguiente().isPresent()}">
+        <span class="panel-viajero__label">📈 Rango temporal</span>
+        <strong th:text="${rangoCredito.titulo}">Leyenda</strong>
+        <p class="panel-viajero__rango-perk" th:text="${rangoCredito.descripcionPerk}">Máximo rango</p>
     </div>
     <div class="panel-viajero__stat" th:if="${descuentoAventuraPorcentaje > 0}">
         <span class="panel-viajero__label">🏷️ Cupón activo</span>

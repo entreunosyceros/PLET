@@ -28,9 +28,9 @@
             <h2>Consecuencias</h2>
             <ul>
                 <li th:if="${efectos.cambioCreditos() != 0}">
-                    💰 Créditos:
-                    <strong th:text="${efectos.cambioCreditos() > 0 ? '+' + efectos.cambioCreditos() : efectos.cambioCreditos()}">0</strong>
-                    (saldo actual: <span th:text="${res.creditosTrasEleccion()}">0</span>)
+                    💰 <span th:text="${monedaNombre}">Gallifantes Temporales</span>:
+                    <strong th:text="${efectos.cambioCreditos() > 0 ? '+' + efectos.cambioCreditos() : efectos.cambioCreditos()} + ' ' + ${monedaAbrev}">0 GT</strong>
+                    (saldo: <span th:text="${res.creditosTrasEleccion()} + ' ' + ${monedaAbrev}">0 GT</span>)
                 </li>
                 <li th:if="${efectos.objetoInventario().isPresent()}">
                     🎒 Objeto obtenido: <strong th:text="${efectos.objetoInventario().get()}">Objeto</strong>

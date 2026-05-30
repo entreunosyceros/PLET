@@ -29,7 +29,7 @@ public final class CatalogoAventuras {
                                     """
                                     Te chupa medio litro de sangre y te deja un ronchón cósmico, pero la \
                                     línea temporal sigue intacta. La agencia te premia con un bonus de \
-                                    +50 créditos y te guardas el ronchón como souvenir científico.
+                                    +50 GT y te guardas el ronchón como souvenir científico.
                                     """.trim(),
                                     new EfectosOpcion(
                                             50,
@@ -47,7 +47,7 @@ public final class CatalogoAventuras {
                                     """
                                     ¡PARADOJA TRÁGICA! Al volver al presente, descubres que los humanos ahora \
                                     tienen tres ojos y el café no existe. El sistema te cobra una multa de \
-                                    -100 créditos por el seguro del Efecto Mariposa.
+                                    -100 GT por el seguro del Efecto Mariposa.
                                     """.trim(),
                                     new EfectosOpcion(
                                             -100,
@@ -78,7 +78,7 @@ public final class CatalogoAventuras {
                                     "Aceptar el circuito de lodo (es gratis, no hay caja)",
                                     """
                                     Sales relajado, oliendo a spa prehistórico. Te regalan un tarro de \
-                                    lodo termal como producto promocional y +35 créditos por reseña \
+                                    lodo termal como producto promocional y +35 GT por reseña \
                                     positiva en la tablilla de la cueva.
                                     """.trim(),
                                     new EfectosOpcion(
@@ -97,7 +97,7 @@ public final class CatalogoAventuras {
                                     """
                                     El shock térmico provoca una estampida que rediseña el relieve \
                                     continental. Vuelves al presente y el GPS ya no reconoce Portugal. \
-                                    Multa de -90 créditos y paradoja activada.
+                                    Multa de -90 GT y paradoja activada.
                                     """.trim(),
                                     new EfectosOpcion(
                                             -90,
@@ -128,7 +128,7 @@ public final class CatalogoAventuras {
                                     "Subir y agarrarte fuerte",
                                     """
                                     El vuelo es terrorífico pero eficaz. Aterrizas cerca de un nido \
-                                    vacío con una pluma suelta y +45 créditos que el pterodáctilo \
+                                    vacío con una pluma suelta y +45 GT que el pterodáctilo \
                                     «no declarará a Hacienda Cretácica».
                                     """.trim(),
                                     new EfectosOpcion(
@@ -147,7 +147,7 @@ public final class CatalogoAventuras {
                                     """
                                     El pterodáctilo se siente acosado por la burocracia futura, despega \
                                     en vertical y choca contra un meteorito… que no debía desviarse \
-                                    tres centímetros. Paradoja temporal: -110 créditos.
+                                    tres centímetros. Paradoja temporal: -110 GT.
                                     """.trim(),
                                     new EfectosOpcion(
                                             -110,
@@ -177,7 +177,7 @@ public final class CatalogoAventuras {
                                     "aceptar-trato",
                                     "Aceptar el trato",
                                     """
-                                    Ganas +200 créditos al vender los denarios en el presente, pero recibes \
+                                    Ganas +200 GT al vender los denarios en el presente, pero recibes \
                                     un aviso de la agencia por introducir tecnología del siglo XXI en el \
                                     Imperio Romano. Te llevas un denario como souvenir.
                                     """.trim(),
@@ -215,7 +215,7 @@ public final class CatalogoAventuras {
                                     """
                                     El centurión ve un anuncio de seguros antes del combate y decide \
                                     que los dioses son publicidad. Roma inventa el marketing quince \
-                                    siglos antes de tiempo. Paradoja histórica: -95 créditos.
+                                    siglos antes de tiempo. Paradoja histórica: -95 GT.
                                     """.trim(),
                                     new EfectosOpcion(
                                             -95,
@@ -274,7 +274,7 @@ public final class CatalogoAventuras {
                                     """
                                     Un augur lee tu grafiti, entra en pánico y quema el Senado por \
                                     accidente… el martes. Has adelantado tres crisis políticas y \
-                                    activado una paradoja histórica. -85 créditos de arreglos.
+                                    activado una paradoja histórica. -85 GT de arreglos.
                                     """.trim(),
                                     new EfectosOpcion(
                                             -85,
@@ -304,7 +304,7 @@ public final class CatalogoAventuras {
                                     "coger-monedas",
                                     "Coger monedas y salir discretamente",
                                     """
-                                    Te escabulles con +300 créditos en metálico temporal. La agencia \
+                                    Te escabulles con +300 GT en metálico temporal. La agencia \
                                     archiva el incidente como «turismo cultural intensivo».
                                     """.trim(),
                                     EfectosOpcion.creditos(300)
@@ -314,7 +314,7 @@ public final class CatalogoAventuras {
                                     "Dejarlo intacto por respeto histórico",
                                     """
                                     Cierras la losa sin tocar nada. Un centurión fantasma asiente desde \
-                                    las sombras. La agencia te bonifica con +75 créditos por ética excepcional.
+                                    las sombras. La agencia te bonifica con +75 GT por ética excepcional.
                                     """.trim(),
                                     EfectosOpcion.creditos(75)
                             ),
@@ -324,7 +324,7 @@ public final class CatalogoAventuras {
                                     """
                                     La estatua cae, aplasta una urna votiva y cambia el resultado de \
                                     una elección municipal del 98 a.C. Te escabulles con una ánfora \
-                                    rota y una paradoja histórica de manual: -100 créditos.
+                                    rota y una paradoja histórica de manual: -100 GT.
                                     """.trim(),
                                     new EfectosOpcion(
                                             -100,
@@ -353,9 +353,9 @@ public final class CatalogoAventuras {
                     List.of(
                             new OpcionAventura(
                                     "prestar-creditos",
-                                    "Prestarle 50 créditos",
+                                    "Prestarle 50 GT",
                                     """
-                                    Tu saldo baja en -50 créditos, pero el chaval te da las gracias y te \
+                                    Tu saldo baja en -50 GT, pero el chaval te da las gracias y te \
                                     regala un almanaque deportivo del futuro. Puedes consumirlo en el carrito \
                                     para un 20 % de descuento en tu próximo viaje.
                                     """.trim(),
@@ -375,7 +375,7 @@ public final class CatalogoAventuras {
                                     """
                                     El chaval se enfada, te borra de su árbol genealógico digital y empiezas \
                                     a notar que tus manos se vuelven transparentes estilo Marty McFly. Tienes \
-                                    que pagar -80 créditos médicos de urgencia para estabilizar tu línea genética.
+                                    que pagar -80 GT médicos de urgencia para estabilizar tu línea genética.
                                     """.trim(),
                                     new EfectosOpcion(
                                             -80,
@@ -406,7 +406,7 @@ public final class CatalogoAventuras {
                                     "Comprar un café doble sin preguntar",
                                     """
                                     El sabor te hace llorar de nostalgia. Te venden una bebida neural \
-                                    de recuerdo por -30 créditos. Puedes consumirla en el carrito \
+                                    de recuerdo por -30 GT. Puedes consumirla en el carrito \
                                     para un 15 % de descuento.
                                     """.trim(),
                                     new EfectosOpcion(
@@ -425,7 +425,7 @@ public final class CatalogoAventuras {
                                     """
                                     Te denuncian a ti por exceso de hipocresía. Te multan, borran \
                                     tu historial de pedidos de café y activan paradoja genética \
-                                    porque «alguien así no puede tener abuelos». -70 créditos.
+                                    porque «alguien así no puede tener abuelos». -70 GT.
                                     """.trim(),
                                     new EfectosOpcion(
                                             -70,
@@ -455,7 +455,7 @@ public final class CatalogoAventuras {
                                     "estudiar-manual",
                                     "Estudiar el manual de 4.000 páginas holográficas",
                                     """
-                                    Apruebas raspando y recibes +40 créditos de devolución de tasas. \
+                                    Apruebas raspando y recibes +40 GT de devolución de tasas. \
                                     Te regalan una pegatina oficial que nadie entiende pero todos \
                                     miran en las pasarelas.
                                     """.trim(),
@@ -475,7 +475,7 @@ public final class CatalogoAventuras {
                                     """
                                     Copias sus respuestas… y también su sueño de ser un pato. \
                                     Colapsas el sistema de exámenes del distrito 7. Paradoja \
-                                    genética leve pero documentada: -90 créditos.
+                                    genética leve pero documentada: -90 GT.
                                     """.trim(),
                                     new EfectosOpcion(
                                             -90,

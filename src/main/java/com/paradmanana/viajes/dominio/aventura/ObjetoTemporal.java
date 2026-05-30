@@ -8,7 +8,7 @@ import com.paradmanana.viajes.dominio.Era;
  * @param id                  identificador en inventario (sesión)
  * @param nombre              nombre visible
  * @param era                 era de origen
- * @param precioReventa       créditos al vender en el presente (0 = no vendible)
+ * @param precioReventa       GT al vender en el presente (0 = no vendible)
  * @param descuentoConsumible % de descuento al consumir en el carrito (0 = no consumible)
  * @param coleccionable       cuenta para el Museo del Tiempo
  */

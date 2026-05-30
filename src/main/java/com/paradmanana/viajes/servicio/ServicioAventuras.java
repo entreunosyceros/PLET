@@ -8,6 +8,7 @@ import com.paradmanana.viajes.dominio.aventura.EscenaAventura;
 import com.paradmanana.viajes.dominio.aventura.EscenaBloqueada;
 import com.paradmanana.viajes.dominio.aventura.ObjetoTemporal;
 import com.paradmanana.viajes.dominio.aventura.OpcionAventura;
+import com.paradmanana.viajes.dominio.aventura.RangoCredito;
 import com.paradmanana.viajes.dominio.aventura.TipoParadoja;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Economía circular temporal: créditos, inventario, museo, reventa y consumibles.
+ * Economía circular temporal: Gallifantes Temporales, inventario, museo, reventa y consumibles.
  */
 @Service
 @SessionScope
@@ -111,7 +112,30 @@ public class ServicioAventuras {
             }
             return tipoParadojaActiva.getTituloAgente();
         }
-        return coleccionMuseoCompleta() ? TITULO_VETERANO : TITULO_BASE;
+        if (coleccionMuseoCompleta()) {
+            return TITULO_VETERANO;
+        }
+        RangoCredito rango = obtenerRangoCredito();
+        if (rango != RangoCredito.BRONCE) {
+            return rango.getTitulo();
+        }
+        return TITULO_BASE;
+    }
+
+    public RangoCredito obtenerRangoCredito() {
+        return RangoCredito.porCreditos(creditos);
+    }
+
+    public int obtenerProgresoRangoCredito() {
+        return RangoCredito.progresoHaciaSiguiente(creditos);
+    }
+
+    public boolean tieneSalonVip() {
+        return obtenerRangoCredito().tieneSalonVip();
+    }
+
+    public boolean tieneNavDorado() {
+        return obtenerRangoCredito().tieneNavDorado();
     }
 
     public boolean coleccionMuseoCompleta() {

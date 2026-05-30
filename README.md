@@ -84,6 +84,8 @@ No todas las épocas son igual de arriesgadas. Cada destino (`Era`) tiene un **�
 | Antigua Roma | 4,2 / 10 | 52,50 € |
 | Año 3000 | 6,5 / 10 | 81,25 € |
 
+**Aviso de la Agencia:** Si buscas viajar a una fecha no listada, contacta con nuestra división de 'Líneas temporales VIP's' (Se requiere saldo superior a 1.000.000 GT y un certificado de no-existencia de antepasados conflictivos).
+
 Fórmula: `recargo riesgo = índice de la era × 12,50 €`
 
 Dinosaurios encarecen mucho por depredadores y caos; Roma es más «civilizada»; el futuro tiene incertidumbre tecnológica intermedia.
@@ -158,10 +160,10 @@ Encuentros textuales por sesión HTTP. Solo se pueden jugar **estando físicamen
 
 **Estado en sesión** (`ServicioAventuras`):
 
-- **Créditos** — moneda virtual; 1 crédito = 1 € de descuento en el carrito
+- **Gallifantes Temporales (GT)** — moneda virtual; 1 GT = 1 € de descuento en el carrito (`MonedaTemporal.java`)
 - **Inventario** — objetos coleccionables (solo narrativos por ahora)
 - **Descuento %** — se aplica a la próxima compra y se consume al pagar
-- **Paradoja activa** — flag de humor tras decisiones caóticas
+- **Paradoja activa** — consecuencias mecánicas y la ventana flotante `Paradoja.exe` (ver abajo)
 
 #### Crear una aventura nueva
 
@@ -179,7 +181,7 @@ new EscenaAventura(
             "opcion-a",
             "Texto del botón A",
             "Texto resultado al elegir A…",
-            EfectosOpcion.creditos(50)   // atajo para +50 créditos
+            EfectosOpcion.creditos(50)   // atajo para +50 GT
         ),
         new OpcionAventura(
             "opcion-b",
@@ -189,9 +191,10 @@ new EscenaAventura(
                 -30,                              // cambioCreditos
                 false,                            // activarParadoja
                 Optional.empty(),                 // destinoForzado (salto a otra era)
-                Optional.of("Objeto raro"),       // objetoInventario
+                Optional.of("objeto-id"),         // objetoInventario
                 10,                               // descuentoProximaCompraPorcentaje
-                false                             // regresarAlPresente
+                false,                            // regresarAlPresente
+                Optional.empty()                  // tipoParadoja (si activarParadoja)
             )
         )
     )
@@ -204,14 +207,36 @@ new EscenaAventura(
 
 | Campo | Efecto |
 |-------|--------|
-| `cambioCreditos` | Suma o resta créditos (+50, −100…) |
+| `cambioCreditos` | Suma o resta GT (+50, −100…) |
 | `activarParadoja` | Marca paradoja temporal en sesión |
 | `destinoForzado` | Teletransporte accidental a otra era |
 | `objetoInventario` | Añade objeto al inventario del viajero |
 | `descuentoProximaCompraPorcentaje` | % off en la próxima compra del carrito |
 | `regresarAlPresente` | Activa retorno de emergencia al 2026 |
+| `tipoParadoja` | Tipo de paradoja (`EFECTO_MARIPOSA`, `PARADOJA_GENETICA`, `PARADOJA_HISTORICA`) |
 
-Archivos clave: `dominio/aventura/`, `ServicioAventuras.java`, `ControladorAventuras.java`, plantillas `aventuras.html`, `aventura.html`, `aventura-resultado.html`.
+#### ⚠️ Paradoja temporal (feature paradojal)
+
+Si en una aventura (`/aventuras`) eliges una opción que activa `activarParadoja = true`, el sistema detecta que has roto la línea temporal.
+
+**¿Qué pasa entonces?**
+
+- Aparece una ventana flotante **no modal** (`Paradoja.exe`) que se mueve sola por la pantalla.
+- Si intentas cerrarla con **clic izquierdo** en la × → se cierra… y **se abre otra en una posición diferente** (hasta 5 veces; configurable en `plantilla.html`).
+- Solo podrás cerrarla definitivamente haciendo **clic derecho** sobre la × (botón secundario del ratón).
+- Tu **título de agente** cambia, el **seguro Efecto Mariposa** oscila con triple intensidad (±3 %) y el **próximo billete** lleva un recargo de estabilización (20–25 %) hasta que pagues en el carrito.
+
+**¿Por qué?**
+
+Porque una paradoja no se resuelve con acciones convencionales.  
+La interfaz se vuelve inestable, igual que el tiempo.
+
+**Bonus:** El usuario puede seguir navegando por la web mientras la ventana se mueve.  
+La paradoja no bloquea la aplicación, solo **molesta** (como debe ser).
+
+Cada era tiene **3 aventuras**; en todas hay al menos una opción que puede activar paradoja. Tras pagar el recargo en el carrito, la paradoja se liquida y todo vuelve a la normalidad.
+
+Archivos: `TipoParadoja.java`, `ServicioAventuras.java`, `static/js/ventana-flotante.js`.
 
 #### Economía circular temporal
 
@@ -224,7 +249,22 @@ Archivos clave: `dominio/aventura/`, `ServicioAventuras.java`, `ControladorAvent
 
 Objetos definidos en `CatalogoObjetos.java` (id, nombre, era, precio reventa, % consumible, si es pieza de museo).
 
-Ciclo: **viajas → aventuras → ganas objetos/créditos → reinviertes** (vendes, consumes cupones o completas museo).
+Ciclo: **viajas → aventuras → ganas GT/objetos → reinviertes** (vendes, consumes cupones o completas museo).
+
+#### Rangos por Gallifantes Temporales (`RangoCredito`)
+
+Acumular GT (sin gastarlos todos) sube tu rango temporal y desbloquea ventajas cosméticas:
+
+| GT | Título | Ventaja |
+|----|--------|---------|
+| **100+** | Carterista temporal certificado | Contador de GT brillante en el panel |
+| **250+** | Magnate del cronodólar | Navbar dorada |
+| **500+** | Miembro Platinum del Salón VIP | Enlace **🥂 Salón VIP** → `/salon-vip` (easter eggs interactivos) |
+| **1000+** | Leyenda con liquidez interdimensional | Trono + botón **🌌 Comprar el universo** en el salón VIP |
+
+La barra de progreso hacia el siguiente hito aparece en el panel del viajero (visible en aventuras, colección y salón VIP). El título por GT sustituye a «Viajero temporal», pero **Agente Veterano** (museo completo) tiene prioridad.
+
+> **Nota legal:** La venta de objetos anacrónicos en el presente puede atraer la atención de la Interpol Temporal. La empresa se lava las manos si te detienen con un Gladius en el metro.
 
 ### Personalidad de cada era (advertencias, curiosidades, restricciones)
 

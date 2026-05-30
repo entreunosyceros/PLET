@@ -16,6 +16,10 @@
             véndelos en el presente o completa el museo para ser <strong>Agente Veterano</strong>
             (−5 % permanente en billetes).
         </p>
+        <p class="nota-legal">
+            <strong>Nota legal:</strong> La venta de objetos anacrónicos en el presente puede atraer la atención
+            de la Interpol Temporal. La empresa se lava las manos si te detienen con un Gladius en el metro.
+        </p>
     </header>
 
     <section class="coleccion-museo">
@@ -40,7 +44,7 @@
 
     <section class="coleccion-empeño" th:if="${!vendibles.isEmpty()}">
         <h2>💱 Casa de empeños temporal</h2>
-        <p th:if="${enPresente}">Estás en el presente: puedes vender souvenirs por créditos.</p>
+        <p th:if="${enPresente}">Estás en el presente: puedes vender souvenirs por Gallifantes Temporales.</p>
         <p th:unless="${enPresente}" class="aviso-paradoja">
             ⚠️ Solo puedes vender objetos estando en el presente (2026). Regresa antes de deshacerte de tus tesoros.
         </p>
@@ -48,7 +52,7 @@
             <li th:each="obj : ${vendibles}" class="coleccion-venta-item">
                 <div>
                     <strong th:text="${obj.nombre()}">Objeto</strong>
-                    <span class="coleccion-venta-precio" th:text="'→ ' + ${obj.precioReventa()} + ' créditos'">0</span>
+                    <span class="coleccion-venta-precio" th:text="'→ ' + ${obj.precioReventa()} + ' ' + ${monedaAbrev}">0 GT</span>
                     <span th:if="${obj.esConsumible()}" class="coleccion-venta-tag">consumible</span>
                     <span th:if="${obj.coleccionable()}" class="coleccion-venta-tag">museo</span>
                 </div>

@@ -13,7 +13,8 @@
         <h2>Tu estado ahora mismo</h2>
         <p>Posición temporal en sesión: <strong th:text="${posicionViajero}">2026 d.C. (presente)</strong></p>
         <p>Título: <strong th:text="${tituloAgente}">Viajero temporal</strong>
-           · Créditos: <strong th:text="${creditosViajero}">0</strong></p>
+           · <span th:text="${monedaNombre}">Gallifantes Temporales</span>:
+           <strong th:text="${creditosViajero} + ' ' + ${monedaAbrev}">0 GT</strong></p>
         <p th:if="${!inventarioViajero.isEmpty()}">
             Inventario:
             <span th:each="obj, stat : ${inventarioViajero}"
@@ -258,7 +259,7 @@ AnoTemporal.de(0)                  → IllegalArgumentException
             <tr><td><code>id</code></td><td>Identificador en inventario (sesión)</td></tr>
             <tr><td><code>nombre</code></td><td>Texto visible en pantalla</td></tr>
             <tr><td><code>era</code></td><td>Era de origen (museo / lore)</td></tr>
-            <tr><td><code>precioReventa</code></td><td>Créditos al vender en el presente (0 = no vendible)</td></tr>
+            <tr><td><code>precioReventa</code></td><td>GT al vender en el presente (0 = no vendible)</td></tr>
             <tr><td><code>descuentoConsumible</code></td><td>% al consumir en carrito (0 = no consumible)</td></tr>
             <tr><td><code>coleccionable</code></td><td>Si cuenta para el Museo del Tiempo</td></tr>
             </tbody>
@@ -276,9 +277,9 @@ AnoTemporal.de(0)                  → IllegalArgumentException
             </thead>
             <tbody>
             <tr>
-                <td>💰 Créditos</td>
+                <td>💰 Gallifantes Temporales</td>
                 <td><a href="/carrito">Carrito</a></td>
-                <td>1 crédito = 1 € de descuento automático al pagar (se consumen al confirmar)</td>
+                <td>1 GT = 1 € de descuento automático al pagar (se consumen al confirmar)</td>
             </tr>
             <tr>
                 <td>🎒 Consumible (p. ej. Almanaque)</td>
@@ -288,7 +289,7 @@ AnoTemporal.de(0)                  → IllegalArgumentException
             <tr>
                 <td>🏛️ Souvenir vendible</td>
                 <td><a href="/coleccion">/coleccion</a> (solo en presente)</td>
-                <td><code>POST /coleccion/vender</code> — convierte el objeto en créditos (p. ej. denario → 500)</td>
+                <td><code>POST /coleccion/vender</code> — convierte el objeto en GT (p. ej. denario → 500 GT)</td>
             </tr>
             <tr>
                 <td>⭐ Piezas del museo (×3 eras)</td>
@@ -299,6 +300,25 @@ AnoTemporal.de(0)                  → IllegalArgumentException
         </table>
         <p>Estado gestionado por <code>ServicioAventuras</code> (<code>@SessionScope</code>).
            Los descuentos se calculan en <code>ServicioCarrito.obtenerResumen()</code>.</p>
+
+        <h3 class="logica-subtitulo" id="rangos-credito">Rangos por Gallifantes Temporales acumulados</h3>
+        <p>Los GT no solo sirven para pagar billetes: al acumularlos subes de rango y desbloqueas ventajas cosméticas
+           (definidas en <code>RangoCredito.java</code>). El panel del viajero muestra una barra de progreso.</p>
+        <table class="tabla-logica">
+            <thead>
+            <tr><th>GT</th><th>Título</th><th>Qué desbloqueas</th></tr>
+            </thead>
+            <tbody>
+            <tr><td>100+</td><td>Carterista temporal certificado</td><td>Contador de GT brillante</td></tr>
+            <tr><td>250+</td><td>Magnate del cronodólar</td><td>Barra de navegación dorada</td></tr>
+            <tr><td>500+</td><td>Miembro Platinum del Salón VIP</td><td><a href="/salon-vip">/salon-vip</a> en el menú</td></tr>
+            <tr><td>1000+</td><td>Leyenda con liquidez interdimensional</td><td>Trono y botón «Comprar el universo» en el salón VIP</td></tr>
+            </tbody>
+        </table>
+        <p class="nota-legal">
+            <strong>Nota legal:</strong> La venta de objetos anacrónicos en el presente puede atraer la atención
+            de la Interpol Temporal. La empresa se lava las manos si te detienen con un Gladius en el metro.
+        </p>
     </section>
 
     <section class="logica-seccion" id="estructura">
@@ -316,7 +336,7 @@ AnoTemporal.de(0)                  → IllegalArgumentException
 │   ├── CalculadoraPrecios, SeguroEfectoMariposa
 │   ├── ValidadorParadojas, CalculadorCarrito, ServicioCarrito
 │   ├── ServicioPosicionViajero, ServicioBilletesVuelta
-│   └── ServicioAventuras          ← créditos, inventario, museo, descuentos
+│   └── ServicioAventuras          ← GT, inventario, museo, descuentos
 ├── controlador/
 │   ├── ControladorTienda          ← catálogo, carrito, compra, confirmación
 │   ├── ControladorAventuras       ← /aventuras

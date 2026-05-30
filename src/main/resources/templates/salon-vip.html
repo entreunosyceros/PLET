@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/plantilla :: cabecera('Salón VIP del Tiempo')}"></head>
+<body class="pagina-salon-vip">
+<nav th:replace="~{fragmentos/plantilla :: navegacion}"></nav>
+
+<main class="container">
+    <div th:replace="~{fragmentos/plantilla :: alertas}"></div>
+    <div th:replace="~{fragmentos/plantilla :: panelViajero}"></div>
+
+    <header class="salon-vip-hero">
+        <p class="salon-vip-badge">🥂 Acceso Platinum</p>
+        <h1>Salón VIP del Tiempo</h1>
+        <p class="salon-vip-lema">Donde el champán es holográfico y la waiting list es una paradoja.</p>
+        <p class="salon-vip-rango">
+            Rango actual: <strong th:text="${rangoCredito.titulo}">Miembro Platinum</strong>
+        </p>
+    </header>
+
+    <section class="salon-vip-amenidades">
+        <h2>Amenidades incluidas (ninguna es real)</h2>
+        <ul class="salon-vip-lista">
+            <li>🛋️ Sofás que existen en todas las líneas temporales a la vez</li>
+            <li>🍾 Barra libre de agua con memoria de haber sido vino alguna vez</li>
+            <li>📺 Pantalla con repeticiones del Big Bang en 4K (sin spoilers del final)</li>
+            <li>🧳 Consigna para paradojas que no caben en el equipaje de mano</li>
+            <li th:if="${rangoCredito.name() == 'LEYENDA'}">
+                👑 Trono de cromo temporal (solo rango Leyenda — tú)
+            </li>
+        </ul>
+    </section>
+
+    <section class="salon-vip-botones">
+        <h2>Servicios exclusivos</h2>
+        <button type="button" class="btn btn-primary salon-vip-btn" id="btnColaBigBang">
+            ⏭️ Saltar la cola del Big Bang
+        </button>
+        <button type="button" class="btn btn-secondary salon-vip-btn" id="btnCafeLegal">
+            ☕ Pedir café legal (contrabando incluido)
+        </button>
+        <button th:if="${rangoCredito.name() == 'LEYENDA'}" type="button"
+                class="btn btn-outline salon-vip-btn salon-vip-btn--leyenda" id="btnComprarUniverso">
+            🌌 Comprar el universo
+        </button>
+        <p class="salon-vip-respuesta" id="salonVipRespuesta" hidden></p>
+    </section>
+
+    <p class="salon-vip-volver">
+        <a href="/aventuras">← Volver a aventuras</a> ·
+        <a href="/coleccion">🏛️ Colección</a>
+    </p>
+</main>
+
+<footer th:replace="~{fragmentos/plantilla :: pie}"></footer>
+<script th:src="@{/js/salon-vip.js}"></script>
+</body>
+</html>

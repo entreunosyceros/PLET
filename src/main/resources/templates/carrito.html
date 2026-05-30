@@ -118,10 +118,10 @@
                     <span th:text="'− ' + ${#numbers.formatDecimal(resumen.descuentoPorcentajeAventura, 1, 2)} + ' €'">0 €</span>
                 </div>
                 <div th:if="${resumen.descuentoCreditosAventura.compareTo(T(java.math.BigDecimal).ZERO) > 0}" class="resumen-linea descuento">
-                    <span>Créditos aplicados (1 crédito = 1 €)</span>
+                    <span th:text="${monedaNombre} + ' aplicados (1 GT = 1 €)'">Gallifantes Temporales aplicados</span>
                     <span th:text="'− ' + ${#numbers.formatDecimal(resumen.descuentoCreditosAventura, 1, 2)} + ' €'">0 €</span>
                 </div>
-                <p class="beneficios-aventura__hint">Créditos y cupones % se consumen al pagar. El −5 % veterano requiere las 3 piezas del museo en inventario.</p>
+                <p class="beneficios-aventura__hint">Los GT y cupones % se consumen al pagar. El −5 % veterano requiere las 3 piezas del museo en inventario.</p>
             </div>
 
             <div th:if="${!consumibles.isEmpty()}" class="consumibles-carrito">

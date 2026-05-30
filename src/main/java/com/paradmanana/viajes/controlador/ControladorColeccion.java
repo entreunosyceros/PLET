@@ -46,7 +46,9 @@ public class ControladorColeccion {
                     .map(ObjetoTemporal::nombre)
                     .orElse(objetoId);
             redireccion.addFlashAttribute("mensajeExito",
-                    "💰 Has vendido «" + nombre + "» por " + precio.get() + " créditos en la casa de empeños.");
+                    "💰 Has vendido «" + nombre + "» por " + precio.get() + " "
+                            + com.paradmanana.viajes.dominio.MonedaTemporal.ABREVIATURA
+                            + " en la casa de empeños.");
         }
         return "redirect:/coleccion";
     }
