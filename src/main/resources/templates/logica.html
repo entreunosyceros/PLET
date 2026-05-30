@@ -25,7 +25,13 @@
             <span th:each="codigo : ${erasVueltaPrepagada}" class="badge-vuelta" th:text="${codigo}">ROMA</span>
         </p>
         <p th:if="${erasVueltaPrepagada.isEmpty()}">No tienes vueltas prepagadas pendientes.</p>
-        <p th:if="${paradojaActiva}" class="aviso-paradoja">🌀 Paradoja temporal activa en tu sesión.</p>
+        <p th:if="${paradojaActiva}" class="aviso-paradoja">
+            🌀 Paradoja activa: recargo del <strong th:text="${recargoParadojaPorcentaje} + '%'">20%</strong>
+            en el próximo billete y seguro Mariposa ×3 hasta que pagues la estabilización.
+            Aparecerá una ventana <code>Paradoja.exe</code> que se mueve sola:
+            el × con <strong>clic izquierdo</strong> la hace reaparecer (5 veces);
+            con <strong>clic derecho</strong> se cierra de verdad.
+        </p>
         <p th:if="${coleccionMuseoCompleta}">⭐ Colección del museo completa — −5 % permanente en billetes.</p>
     </section>
 
@@ -210,7 +216,18 @@ AnoTemporal.de(0)                  → IllegalArgumentException
     <section class="logica-seccion" id="aventuras">
         <h2>10. Libro-juego «Elige tu propia aventura»</h2>
         <p>Encuentros textuales que solo puedes jugar <strong>estando en la era</strong> correspondiente, una vez por sesión.
-           Rutas: <a href="/aventuras">/aventuras</a> · <code>/aventuras/{id}</code> · <code>POST /aventuras/{id}</code>.</p>
+           Rutas: <a href="/aventuras">/aventuras</a> · <code>/aventuras/{id}</code> · <code>POST /aventuras/{id}</code>.
+           Hay <strong>3 escenas por era</strong>; en cada una hay al menos una opción que puede activar paradoja temporal.</p>
+        <table class="tabla-logica">
+            <thead>
+            <tr><th>Era</th><th>Escena</th><th>Paradoja posible</th></tr>
+            </thead>
+            <tbody>
+            <tr><td>🦖 Dinosaurios</td><td>El dilema del Mosquito · Balneario jurásico · Taxi pterodáctilo</td><td>Efecto Mariposa</td></tr>
+            <tr><td>🏛️ Roma</td><td>Taberna · Cartógrafo · Tesoro del César</td><td>Paradoja histórica</td></tr>
+            <tr><td>🚀 Año 3000</td><td>Tataranieto · Café clandestino · Examen hoverboard</td><td>Paradoja genética</td></tr>
+            </tbody>
+        </table>
 
         <h3 class="logica-subtitulo">Cómo crear una aventura nueva</h3>
         <p>Edita <code>CatalogoAventuras.java</code> y añade un bloque a la lista <code>TODAS</code>:</p>

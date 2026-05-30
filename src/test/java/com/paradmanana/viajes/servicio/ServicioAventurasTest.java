@@ -26,8 +26,9 @@ class ServicioAventurasTest {
         assertTrue(aventuras.listarJugablesEnPosicion().isEmpty());
 
         posicion.teletransportarA(Era.DINOSAURIOS);
-        assertEquals(1, aventuras.listarJugablesEnPosicion().size());
-        assertEquals("dino-mosquito", aventuras.listarJugablesEnPosicion().getFirst().id());
+        assertEquals(3, aventuras.listarJugablesEnPosicion().size());
+        assertTrue(aventuras.listarJugablesEnPosicion().stream()
+                .anyMatch(e -> e.id().equals("dino-mosquito")));
     }
 
     @Test
@@ -88,6 +89,42 @@ class ServicioAventurasTest {
         assertEquals(20, descuento.get());
         assertEquals(20, aventuras.obtenerDescuentoCompraPorcentaje());
         assertFalse(aventuras.tieneObjeto(CatalogoObjetos.ALMANAQUE_3000.id()));
+    }
+
+    @Test
+    void paradojaActivaCambiaTituloYRecargoEnCarrito() {
+        posicion.teletransportarA(Era.DINOSAURIOS);
+        aventuras.elegir("dino-mosquito", "aplastar");
+
+        assertTrue(aventuras.tieneParadojaActiva());
+        assertEquals("Línea temporal inestable", aventuras.obtenerTituloAgente());
+        assertEquals(20, aventuras.obtenerRecargoParadojaPorcentaje());
+        assertEquals(0.03, aventuras.obtenerAmplitudMariposaParadoja());
+
+        var carrito = new com.paradmanana.viajes.dominio.Carrito();
+        var calculador = new CalculadorCarrito(new java.math.BigDecimal("0.30"));
+        var billete = new com.paradmanana.viajes.servicio.CalculadoraPrecios(new LineaTemporal(2026))
+                .crearBillete(com.paradmanana.viajes.dominio.TipoBillete.IDA, Era.ROMA);
+        carrito.agregar(billete);
+
+        var resumen = aventuras.aplicarBeneficiosAlResumen(calculador.calcularResumen(carrito));
+
+        assertTrue(resumen.tieneRecargoParadoja());
+        assertTrue(resumen.recargoParadoja().compareTo(java.math.BigDecimal.ZERO) > 0);
+    }
+
+    @Test
+    void resolverParadojaTrasPagarRecargo() {
+        posicion.teletransportarA(Era.ANO_3000);
+        aventuras.elegir("3000-tataranieto", "negar-parentesco");
+
+        assertTrue(aventuras.tieneParadojaActiva());
+        assertEquals("Existencia dudosa", aventuras.obtenerTituloAgente());
+
+        aventuras.resolverParadoja();
+
+        assertFalse(aventuras.tieneParadojaActiva());
+        assertEquals("Viajero temporal", aventuras.obtenerTituloAgente());
     }
 
     @Test

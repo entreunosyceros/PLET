@@ -3,6 +3,7 @@ package com.paradmanana.viajes.controlador;
 import com.paradmanana.viajes.dominio.Billete;
 import com.paradmanana.viajes.dominio.Era;
 import com.paradmanana.viajes.dominio.LineaTemporal;
+import com.paradmanana.viajes.dominio.NormasPresente;
 import com.paradmanana.viajes.dominio.TipoBillete;
 import com.paradmanana.viajes.servicio.CalculadoraPrecios;
 import com.paradmanana.viajes.servicio.ServicioCarrito;
@@ -18,9 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Controlador MVC de la tienda de viajes temporales.
@@ -162,6 +161,12 @@ public class ControladorTienda {
         boolean idaYVuelta = billetes.stream().anyMatch(b -> b.tipo() == TipoBillete.IDA)
                 && billetes.stream().anyMatch(b -> b.tipo() == TipoBillete.VUELTA);
         redireccion.addFlashAttribute("mostrarAvisoVueltaPrepagada", idaYVuelta);
+        boolean soloVueltas = !billetes.isEmpty()
+                && billetes.stream().allMatch(b -> b.tipo() == TipoBillete.VUELTA);
+        if (soloVueltas) {
+            redireccion.addFlashAttribute("soloVuelta", true);
+            redireccion.addFlashAttribute("esConfirmacionViaje", true);
+        }
         servicioCarrito.aplicarBeneficiosTrasCompra(resumen);
         servicioPosicion.aplicarBilletes(billetes);
         servicioCarrito.vaciar();
@@ -207,35 +212,41 @@ public class ControladorTienda {
         modelo.addAttribute("soloVuelta", Boolean.TRUE.equals(modelo.getAttribute("soloVuelta")));
         modelo.addAttribute("mostrarAvisoVueltaPrepagada",
                 Boolean.TRUE.equals(modelo.getAttribute("mostrarAvisoVueltaPrepagada")));
-        if (!modelo.containsAttribute("erasAvisos")) {
+        boolean esRegresoPresente = esRegresoAlPresente(modelo);
+        modelo.addAttribute("esRegresoPresente", esRegresoPresente);
+        if (esRegresoPresente) {
+            modelo.addAttribute("normasPresente", NormasPresente.porDefecto());
+            modelo.addAttribute("erasAvisos", List.of());
+        } else if (!modelo.containsAttribute("erasAvisos")) {
             modelo.addAttribute("erasAvisos", extraerErasAvisos(modelo));
         }
         return "confirmacion";
     }
 
+    private boolean esRegresoAlPresente(Model modelo) {
+        if (Boolean.TRUE.equals(modelo.getAttribute("soloVuelta"))) {
+            return true;
+        }
+        Object billetesAttr = modelo.getAttribute("billetes");
+        if (billetesAttr instanceof List<?> lista && !lista.isEmpty()) {
+            boolean tieneIda = lista.stream()
+                    .anyMatch(b -> b instanceof Billete bil && bil.tipo() == TipoBillete.IDA);
+            return !tieneIda;
+        }
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
     private List<Era> extraerErasAvisos(Model modelo) {
-        Set<Era> eras = new LinkedHashSet<>();
         Object billetesAttr = modelo.getAttribute("billetes");
-        if (billetesAttr instanceof List<?> lista) {
-            var erasConIda = lista.stream()
-                    .filter(b -> b instanceof Billete bil && bil.tipo() == TipoBillete.IDA)
-                    .map(b -> ((Billete) b).era())
-                    .collect(java.util.stream.Collectors.toSet());
-            for (Object item : lista) {
-                if (item instanceof Billete b && b.tipo() == TipoBillete.IDA) {
-                    eras.add(b.era());
-                } else if (item instanceof Billete b && b.tipo() == TipoBillete.VUELTA
-                        && !erasConIda.contains(b.era())) {
-                    eras.add(b.era());
-                }
-            }
+        if (!(billetesAttr instanceof List<?> lista)) {
+            return List.of();
         }
-        Object eraSalida = modelo.getAttribute("eraSalida");
-        if (eraSalida instanceof Era era) {
-            eras.add(era);
-        }
-        return List.copyOf(eras);
+        return lista.stream()
+                .filter(b -> b instanceof Billete bil && bil.tipo() == TipoBillete.IDA)
+                .map(b -> ((Billete) b).era())
+                .distinct()
+                .toList();
     }
 
     @SuppressWarnings("unchecked")

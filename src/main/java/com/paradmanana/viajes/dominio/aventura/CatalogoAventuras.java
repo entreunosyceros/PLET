@@ -37,7 +37,8 @@ public final class CatalogoAventuras {
                                             Optional.empty(),
                                             Optional.of(CatalogoObjetos.RONCHON_COSMICO.id()),
                                             0,
-                                            false
+                                            false,
+                                            Optional.empty()
                                     )
                             ),
                             new OpcionAventura(
@@ -54,7 +55,108 @@ public final class CatalogoAventuras {
                                             Optional.empty(),
                                             Optional.empty(),
                                             0,
-                                            false
+                                            false,
+                                            Optional.of(TipoParadoja.EFECTO_MARIPOSA)
+                                    )
+                            )
+                    )
+            ),
+
+            new EscenaAventura(
+                    "dino-spa-volcan",
+                    Era.DINOSAURIOS,
+                    "Balneario jurásico premium",
+                    "Un brontosaurio te invita a su spa de lodo termal. La recepción es una roca.",
+                    """
+                    Encuentras un manantial humeante donde tres herbívoros de tamaño industrial disfrutan \
+                    de un «circuito termal» de barro. Un brontosaurio te mira con ojos de quien lleva \
+                    esperando masajista desde el Jurásico Medio. Hay toallas de hojas de helecho.
+                    """.trim(),
+                    List.of(
+                            new OpcionAventura(
+                                    "bano-de-lodo",
+                                    "Aceptar el circuito de lodo (es gratis, no hay caja)",
+                                    """
+                                    Sales relajado, oliendo a spa prehistórico. Te regalan un tarro de \
+                                    lodo termal como producto promocional y +35 créditos por reseña \
+                                    positiva en la tablilla de la cueva.
+                                    """.trim(),
+                                    new EfectosOpcion(
+                                            35,
+                                            false,
+                                            Optional.empty(),
+                                            Optional.of(CatalogoObjetos.LODO_VOLCANICO.id()),
+                                            0,
+                                            false,
+                                            Optional.empty()
+                                    )
+                            ),
+                            new OpcionAventura(
+                                    "gritar-parejo",
+                                    "Gritar «¡PAREJO, QUE ME QUEMO!» y echarles agua fría",
+                                    """
+                                    El shock térmico provoca una estampida que rediseña el relieve \
+                                    continental. Vuelves al presente y el GPS ya no reconoce Portugal. \
+                                    Multa de -90 créditos y paradoja activada.
+                                    """.trim(),
+                                    new EfectosOpcion(
+                                            -90,
+                                            true,
+                                            Optional.empty(),
+                                            Optional.empty(),
+                                            0,
+                                            false,
+                                            Optional.of(TipoParadoja.EFECTO_MARIPOSA)
+                                    )
+                            )
+                    )
+            ),
+
+            new EscenaAventura(
+                    "dino-pterodactil-taxi",
+                    Era.DINOSAURIOS,
+                    "Taxi volador sin licencia",
+                    "Un pterodáctilo te ofrece transporte aéreo. No tiene taxímetro. Sí tiene actitud.",
+                    """
+                    Un pterodáctilo aterriza frente a ti, abre un ala como puerta de coche y gruñe \
+                    un precio en chirridos. Parece un Uber del Cretácico: sin cinturón, sin casco y \
+                    con olor a pescado caducado hace setenta millones de años.
+                    """.trim(),
+                    List.of(
+                            new OpcionAventura(
+                                    "subir-al-taxi",
+                                    "Subir y agarrarte fuerte",
+                                    """
+                                    El vuelo es terrorífico pero eficaz. Aterrizas cerca de un nido \
+                                    vacío con una pluma suelta y +45 créditos que el pterodáctilo \
+                                    «no declarará a Hacienda Cretácica».
+                                    """.trim(),
+                                    new EfectosOpcion(
+                                            45,
+                                            false,
+                                            Optional.empty(),
+                                            Optional.of(CatalogoObjetos.PLUMA_PTERODACTILO.id()),
+                                            0,
+                                            false,
+                                            Optional.empty()
+                                    )
+                            ),
+                            new OpcionAventura(
+                                    "pedir-factura",
+                                    "Exigir factura y cinturón de seguridad homologado",
+                                    """
+                                    El pterodáctilo se siente acosado por la burocracia futura, despega \
+                                    en vertical y choca contra un meteorito… que no debía desviarse \
+                                    tres centímetros. Paradoja temporal: -110 créditos.
+                                    """.trim(),
+                                    new EfectosOpcion(
+                                            -110,
+                                            true,
+                                            Optional.empty(),
+                                            Optional.empty(),
+                                            0,
+                                            false,
+                                            Optional.of(TipoParadoja.EFECTO_MARIPOSA)
                                     )
                             )
                     )
@@ -85,7 +187,8 @@ public final class CatalogoAventuras {
                                             Optional.empty(),
                                             Optional.of(CatalogoObjetos.DENARIO_ROMANO.id()),
                                             0,
-                                            false
+                                            false,
+                                            Optional.empty()
                                     )
                             ),
                             new OpcionAventura(
@@ -102,7 +205,26 @@ public final class CatalogoAventuras {
                                             Optional.empty(),
                                             Optional.of(CatalogoObjetos.BOTA_PERDIDA.id()),
                                             0,
-                                            true
+                                            true,
+                                            Optional.empty()
+                                    )
+                            ),
+                            new OpcionAventura(
+                                    "mostrar-youtube",
+                                    "Enseñarle un vídeo de gladiadores en YouTube",
+                                    """
+                                    El centurión ve un anuncio de seguros antes del combate y decide \
+                                    que los dioses son publicidad. Roma inventa el marketing quince \
+                                    siglos antes de tiempo. Paradoja histórica: -95 créditos.
+                                    """.trim(),
+                                    new EfectosOpcion(
+                                            -95,
+                                            true,
+                                            Optional.empty(),
+                                            Optional.empty(),
+                                            0,
+                                            false,
+                                            Optional.of(TipoParadoja.PARADOJA_HISTORICA)
                                     )
                             )
                     )
@@ -132,7 +254,8 @@ public final class CatalogoAventuras {
                                             Optional.empty(),
                                             Optional.of(CatalogoObjetos.MAPA_CUERO.id()),
                                             0,
-                                            false
+                                            false,
+                                            Optional.empty()
                                     )
                             ),
                             new OpcionAventura(
@@ -144,6 +267,24 @@ public final class CatalogoAventuras {
                                     Nunca sabrás qué había bajo el Foro.
                                     """.trim(),
                                     EfectosOpcion.ninguno()
+                            ),
+                            new OpcionAventura(
+                                    "profetizar-futuro",
+                                    "Escribir en el mapa «Roma caerá en 476 d.C.» como broma",
+                                    """
+                                    Un augur lee tu grafiti, entra en pánico y quema el Senado por \
+                                    accidente… el martes. Has adelantado tres crisis políticas y \
+                                    activado una paradoja histórica. -85 créditos de arreglos.
+                                    """.trim(),
+                                    new EfectosOpcion(
+                                            -85,
+                                            true,
+                                            Optional.empty(),
+                                            Optional.of(CatalogoObjetos.PERGAMINO_FALSO.id()),
+                                            0,
+                                            false,
+                                            Optional.of(TipoParadoja.PARADOJA_HISTORICA)
+                                    )
                             )
                     )
             ),
@@ -176,6 +317,24 @@ public final class CatalogoAventuras {
                                     las sombras. La agencia te bonifica con +75 créditos por ética excepcional.
                                     """.trim(),
                                     EfectosOpcion.creditos(75)
+                            ),
+                            new OpcionAventura(
+                                    "selfie-con-estatua",
+                                    "Hacerte un selfie tocando la estatua del César",
+                                    """
+                                    La estatua cae, aplasta una urna votiva y cambia el resultado de \
+                                    una elección municipal del 98 a.C. Te escabulles con una ánfora \
+                                    rota y una paradoja histórica de manual: -100 créditos.
+                                    """.trim(),
+                                    new EfectosOpcion(
+                                            -100,
+                                            true,
+                                            Optional.empty(),
+                                            Optional.of(CatalogoObjetos.ANFORA_ROTA.id()),
+                                            0,
+                                            false,
+                                            Optional.of(TipoParadoja.PARADOJA_HISTORICA)
+                                    )
                             )
                     ),
                     Optional.of(CatalogoObjetos.MAPA_CUERO.id())
@@ -206,7 +365,8 @@ public final class CatalogoAventuras {
                                             Optional.empty(),
                                             Optional.of(CatalogoObjetos.ALMANAQUE_3000.id()),
                                             0,
-                                            false
+                                            false,
+                                            Optional.empty()
                                     )
                             ),
                             new OpcionAventura(
@@ -223,7 +383,108 @@ public final class CatalogoAventuras {
                                             Optional.empty(),
                                             Optional.empty(),
                                             0,
-                                            false
+                                            false,
+                                            Optional.of(TipoParadoja.PARADOJA_GENETICA)
+                                    )
+                            )
+                    )
+            ),
+
+            new EscenaAventura(
+                    "3000-cafe-prohibido",
+                    Era.ANO_3000,
+                    "El café clandestino",
+                    "En el año 3000 el café es ilegal. Huele a contrabando delicioso.",
+                    """
+                    Un dron susurra que hay «la buena stuff» en un callejón sin cámaras. Dentro, un \
+                    barista cyborg prepara espresso con granos rescatados del siglo XXI. La ley dice \
+                    que la cafeína altera la línea temporal emocional de los ciudadanos.
+                    """.trim(),
+                    List.of(
+                            new OpcionAventura(
+                                    "comprar-cafe",
+                                    "Comprar un café doble sin preguntar",
+                                    """
+                                    El sabor te hace llorar de nostalgia. Te venden una bebida neural \
+                                    de recuerdo por -30 créditos. Puedes consumirla en el carrito \
+                                    para un 15 % de descuento.
+                                    """.trim(),
+                                    new EfectosOpcion(
+                                            -30,
+                                            false,
+                                            Optional.empty(),
+                                            Optional.of(CatalogoObjetos.BEBIDA_NEURAL.id()),
+                                            0,
+                                            false,
+                                            Optional.empty()
+                                    )
+                            ),
+                            new OpcionAventura(
+                                    "denunciar-bar",
+                                    "Denunciar el bar a la Policía Temporal del Bienestar",
+                                    """
+                                    Te denuncian a ti por exceso de hipocresía. Te multan, borran \
+                                    tu historial de pedidos de café y activan paradoja genética \
+                                    porque «alguien así no puede tener abuelos». -70 créditos.
+                                    """.trim(),
+                                    new EfectosOpcion(
+                                            -70,
+                                            true,
+                                            Optional.empty(),
+                                            Optional.empty(),
+                                            0,
+                                            false,
+                                            Optional.of(TipoParadoja.PARADOJA_GENETICA)
+                                    )
+                            )
+                    )
+            ),
+
+            new EscenaAventura(
+                    "3000-examen-hover",
+                    Era.ANO_3000,
+                    "Examen teórico de hoverboard",
+                    "Para circular necesitas aprobar un test. Las preguntas son absurdas.",
+                    """
+                    En la Oficina de Movilidad Antigravitatoria te obligan a un examen teórico. \
+                    Pregunta 1: «Si tu hoverboard se queja, ¿le pones un sticker o terapia?». \
+                    Hay un chófer dormido y un holograma de un inspector muy serio.
+                    """.trim(),
+                    List.of(
+                            new OpcionAventura(
+                                    "estudiar-manual",
+                                    "Estudiar el manual de 4.000 páginas holográficas",
+                                    """
+                                    Apruebas raspando y recibes +40 créditos de devolución de tasas. \
+                                    Te regalan una pegatina oficial que nadie entiende pero todos \
+                                    miran en las pasarelas.
+                                    """.trim(),
+                                    new EfectosOpcion(
+                                            40,
+                                            false,
+                                            Optional.empty(),
+                                            Optional.of(CatalogoObjetos.STICKER_HOVER.id()),
+                                            0,
+                                            false,
+                                            Optional.empty()
+                                    )
+                            ),
+                            new OpcionAventura(
+                                    "copiar-con-telepatia",
+                                    "Intentar copiar telepáticamente al chófer dormido",
+                                    """
+                                    Copias sus respuestas… y también su sueño de ser un pato. \
+                                    Colapsas el sistema de exámenes del distrito 7. Paradoja \
+                                    genética leve pero documentada: -90 créditos.
+                                    """.trim(),
+                                    new EfectosOpcion(
+                                            -90,
+                                            true,
+                                            Optional.empty(),
+                                            Optional.empty(),
+                                            0,
+                                            false,
+                                            Optional.of(TipoParadoja.PARADOJA_GENETICA)
                                     )
                             )
                     )

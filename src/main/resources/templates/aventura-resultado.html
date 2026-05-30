@@ -39,7 +39,12 @@
                     🏷️ Descuento del <strong th:text="${efectos.descuentoProximaCompraPorcentaje()} + '%'">0%</strong> en tu próxima compra
                 </li>
                 <li th:if="${efectos.activarParadoja()}">
-                    🌀 <strong>Paradoja temporal activada</strong> — la agencia no se hace responsable
+                    🌀 <strong>Paradoja temporal activada</strong>
+                    <span th:if="${res.tipoParadoja().isPresent()}">
+                        — título: «<span th:text="${res.tipoParadoja().get().tituloAgente}">Efecto</span>»,
+                        recargo del <strong th:text="${res.tipoParadoja().get().recargoPorcentaje} + '%'">20%</strong>
+                        en tu próximo billete y seguro Mariposa ×3
+                    </span>
                 </li>
                 <li th:if="${efectos.regresarAlPresente()}">
                     ⏳ Has activado el retorno de emergencia al presente

@@ -8,6 +8,7 @@ import com.paradmanana.viajes.dominio.aventura.EscenaAventura;
 import com.paradmanana.viajes.dominio.aventura.EscenaBloqueada;
 import com.paradmanana.viajes.dominio.aventura.ObjetoTemporal;
 import com.paradmanana.viajes.dominio.aventura.OpcionAventura;
+import com.paradmanana.viajes.dominio.aventura.TipoParadoja;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
@@ -36,6 +37,7 @@ public class ServicioAventuras {
     private final Set<String> inventario = new LinkedHashSet<>();
     private final Set<String> escenasCompletadas = new LinkedHashSet<>();
     private boolean paradojaActiva;
+    private TipoParadoja tipoParadojaActiva;
     private int descuentoCompraPorcentaje;
 
     @Autowired
@@ -71,6 +73,29 @@ public class ServicioAventuras {
         return paradojaActiva;
     }
 
+    public Optional<TipoParadoja> obtenerTipoParadojaActiva() {
+        return Optional.ofNullable(tipoParadojaActiva);
+    }
+
+    public double obtenerAmplitudMariposaParadoja() {
+        return tipoParadojaActiva != null
+                ? tipoParadojaActiva.getAmplitudMariposa()
+                : 0.01;
+    }
+
+    public int obtenerRecargoParadojaPorcentaje() {
+        return tipoParadojaActiva != null ? tipoParadojaActiva.getRecargoPorcentaje() : 0;
+    }
+
+    public String obtenerMensajeParadojaPanel() {
+        return tipoParadojaActiva != null ? tipoParadojaActiva.getMensajePanel() : null;
+    }
+
+    public void resolverParadoja() {
+        paradojaActiva = false;
+        tipoParadojaActiva = null;
+    }
+
     public int obtenerDescuentoCompraPorcentaje() {
         return descuentoCompraPorcentaje;
     }
@@ -80,6 +105,12 @@ public class ServicioAventuras {
     }
 
     public String obtenerTituloAgente() {
+        if (paradojaActiva && tipoParadojaActiva != null) {
+            if (coleccionMuseoCompleta()) {
+                return TITULO_VETERANO + " (bajo sospecha)";
+            }
+            return tipoParadojaActiva.getTituloAgente();
+        }
         return coleccionMuseoCompleta() ? TITULO_VETERANO : TITULO_BASE;
     }
 
@@ -187,7 +218,8 @@ public class ServicioAventuras {
                 opcionOpt.get(),
                 creditos,
                 paradojaActiva,
-                descuentoCompraPorcentaje
+                descuentoCompraPorcentaje,
+                Optional.ofNullable(tipoParadojaActiva)
         ));
     }
 
@@ -222,6 +254,7 @@ public class ServicioAventuras {
         creditos += efectos.cambioCreditos();
         if (efectos.activarParadoja()) {
             paradojaActiva = true;
+            tipoParadojaActiva = efectos.tipoParadoja().orElse(TipoParadoja.EFECTO_MARIPOSA);
         }
         if (efectos.descuentoProximaCompraPorcentaje() > 0) {
             descuentoCompraPorcentaje = Math.max(
@@ -237,7 +270,8 @@ public class ServicioAventuras {
     }
 
     public ResumenCarrito aplicarBeneficiosAlResumen(ResumenCarrito base) {
-        BigDecimal total = base.totalAntesBeneficios();
+        ResumenCarrito conParadoja = aplicarRecargoParadoja(base);
+        BigDecimal total = conParadoja.totalAntesBeneficios();
         BigDecimal descuentoPermanente = BigDecimal.ZERO;
         BigDecimal descuentoPorcentaje = BigDecimal.ZERO;
 
@@ -262,12 +296,26 @@ public class ServicioAventuras {
             total = total.subtract(descuentoCreditos);
         }
 
-        return base.conBeneficiosAventura(
+        return conParadoja.conBeneficiosAventura(
                 descuentoPermanente,
                 descuentoPorcentaje,
                 descuentoCreditos,
                 total.max(BigDecimal.ZERO)
         );
+    }
+
+    private ResumenCarrito aplicarRecargoParadoja(ResumenCarrito base) {
+        if (!paradojaActiva || tipoParadojaActiva == null) {
+            return base;
+        }
+        BigDecimal baseRecargo = base.subtotalBilletes().add(base.totalRecargosSoloIda());
+        if (baseRecargo.compareTo(BigDecimal.ZERO) <= 0) {
+            return base;
+        }
+        BigDecimal recargo = baseRecargo
+                .multiply(BigDecimal.valueOf(tipoParadojaActiva.getRecargoPorcentaje()))
+                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+        return base.conRecargoParadoja(recargo, tipoParadojaActiva.getMensajeCarrito());
     }
 
     public void consumirCreditosAplicados(BigDecimal importeUsado) {

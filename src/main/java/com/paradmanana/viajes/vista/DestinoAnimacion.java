@@ -3,6 +3,7 @@ package com.paradmanana.viajes.vista;
 import com.paradmanana.viajes.dominio.AnoTemporal;
 import com.paradmanana.viajes.dominio.Era;
 import com.paradmanana.viajes.dominio.LineaTemporal;
+import com.paradmanana.viajes.dominio.NormasPresente;
 
 import java.util.List;
 
@@ -46,20 +47,20 @@ public record DestinoAnimacion(
     /** Regreso al presente tras usar vuelta prepagada o comprar solo vuelta. */
     public static DestinoAnimacion regresoPresente(Era eraOrigen, LineaTemporal lineaTemporal) {
         AnoTemporal presente = lineaTemporal.presente();
-        String advertencia = eraOrigen.getAdvertencias().isEmpty()
+        NormasPresente normas = NormasPresente.porDefecto();
+        String advertencia = normas.advertencias().isEmpty()
                 ? "Has salido de " + eraOrigen.getNombre() + ". Bienvenido al presente."
-                : "Al abandonar " + eraOrigen.getNombre() + ": "
-                + eraOrigen.getAdvertencias().getFirst();
+                : normas.advertencias().getFirst();
         return new DestinoAnimacion(
                 presente.valor(),
                 presente.formatear(),
                 "Presente",
                 "⏳",
                 "#00d4ff",
-                "Línea temporal restablecida",
-                "presente",
+                normas.lema(),
+                NormasPresente.CLASE_CSS,
                 advertencia,
-                eraOrigen.getAdvertencias()
+                normas.advertencias()
         );
     }
 }

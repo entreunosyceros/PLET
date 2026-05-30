@@ -2,6 +2,7 @@ package com.paradmanana.viajes.configuracion;
 
 import com.paradmanana.viajes.dominio.Era;
 import com.paradmanana.viajes.dominio.LineaTemporal;
+import com.paradmanana.viajes.dominio.NormasPresente;
 import com.paradmanana.viajes.servicio.ServicioAventuras;
 import com.paradmanana.viajes.servicio.ServicioBilletesVuelta;
 import com.paradmanana.viajes.servicio.ServicioCarrito;
@@ -59,6 +60,11 @@ public class AtributosGlobales {
         return lineaTemporal.presente().formatear();
     }
 
+    @ModelAttribute("normasPresente")
+    public NormasPresente normasPresente() {
+        return NormasPresente.porDefecto();
+    }
+
     @ModelAttribute("carrito")
     public com.paradmanana.viajes.dominio.Carrito carrito() {
         return servicioCarrito.obtenerCarrito();
@@ -108,6 +114,16 @@ public class AtributosGlobales {
     @ModelAttribute("paradojaActiva")
     public boolean paradojaActiva() {
         return servicioAventuras.tieneParadojaActiva();
+    }
+
+    @ModelAttribute("mensajeParadoja")
+    public String mensajeParadoja() {
+        return servicioAventuras.obtenerMensajeParadojaPanel();
+    }
+
+    @ModelAttribute("recargoParadojaPorcentaje")
+    public int recargoParadojaPorcentaje() {
+        return servicioAventuras.obtenerRecargoParadojaPorcentaje();
     }
 
     @ModelAttribute("descuentoAventuraPorcentaje")

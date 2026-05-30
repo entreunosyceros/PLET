@@ -1,5 +1,6 @@
 package com.paradmanana.viajes.servicio;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -10,8 +11,8 @@ import java.math.RoundingMode;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Seguro contra el Efecto Mariposa: variación aleatoria de ±1 % por petición HTTP.
- * Cada recarga de página obtiene un porcentaje distinto ({@code @RequestScope}).
+ * Seguro contra el Efecto Mariposa: variación aleatoria por petición HTTP.
+ * Con paradoja activa la amplitud se triplica (±3 % en lugar de ±1 %).
  */
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -19,13 +20,17 @@ public class SeguroEfectoMariposa {
 
     private final BigDecimal porcentaje;
 
-    public SeguroEfectoMariposa() {
-        double variacion = ThreadLocalRandom.current().nextDouble(-0.01, 0.01);
+    @Autowired
+    public SeguroEfectoMariposa(ServicioAventuras servicioAventuras) {
+        double amplitud = servicioAventuras.tieneParadojaActiva()
+                ? servicioAventuras.obtenerAmplitudMariposaParadoja()
+                : 0.01;
+        double variacion = ThreadLocalRandom.current().nextDouble(-amplitud, amplitud);
         this.porcentaje = BigDecimal.valueOf(variacion);
     }
 
-    /** Para tests: porcentaje fijo (p. ej. {@code BigDecimal.ZERO}). */
-    SeguroEfectoMariposa(BigDecimal porcentajeFijo) {
+    /** Solo para tests unitarios ({@link #sinVariacion()}). */
+    private SeguroEfectoMariposa(BigDecimal porcentajeFijo) {
         this.porcentaje = porcentajeFijo;
     }
 
@@ -42,7 +47,7 @@ public class SeguroEfectoMariposa {
                 .setScale(2, RoundingMode.HALF_UP);
     }
 
-    /** Importe del seguro = subtotal × porcentaje aleatorio (±1 %). */
+    /** Importe del seguro = subtotal × porcentaje aleatorio. */
     public BigDecimal calcularImporte(BigDecimal subtotal) {
         return subtotal.multiply(porcentaje).setScale(2, RoundingMode.HALF_UP);
     }

@@ -14,13 +14,18 @@ public record EfectosOpcion(
         Optional<Era> destinoForzado,
         Optional<String> objetoInventario,
         int descuentoProximaCompraPorcentaje,
-        boolean regresarAlPresente
+        boolean regresarAlPresente,
+        Optional<TipoParadoja> tipoParadoja
 ) {
+    public EfectosOpcion {
+        tipoParadoja = tipoParadoja == null ? Optional.empty() : tipoParadoja;
+    }
+
     public static EfectosOpcion ninguno() {
-        return new EfectosOpcion(0, false, Optional.empty(), Optional.empty(), 0, false);
+        return new EfectosOpcion(0, false, Optional.empty(), Optional.empty(), 0, false, Optional.empty());
     }
 
     public static EfectosOpcion creditos(int cantidad) {
-        return new EfectosOpcion(cantidad, false, Optional.empty(), Optional.empty(), 0, false);
+        return new EfectosOpcion(cantidad, false, Optional.empty(), Optional.empty(), 0, false, Optional.empty());
     }
 }

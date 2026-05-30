@@ -7,6 +7,11 @@
 <main class="container">
     <div th:replace="~{fragmentos/plantilla :: alertas}"></div>
 
+    <div th:if="${paradojaActiva}" class="alert alert-paradoja alert-paradoja--activa">
+        <strong>🌀 Paradoja temporal activa.</strong>
+        <span th:text="${mensajeParadoja}">La línea temporal está inestable.</span>
+    </div>
+
     <section class="hero">
         <div class="hero-content">
             <p class="hero-badge">IFCD0112 — Viajes a tiempo S.M.L.</p>
@@ -21,6 +26,9 @@
                 📅 Tu posición temporal:
                 <strong th:text="${posicionViajero}">2026 d.C. (presente)</strong>
             </p>
+            <div th:if="${enPresente}" class="hero-presente-normas">
+                <div th:replace="~{fragmentos/plantilla :: saborPresente(normas=${normasPresente}, compacto=true)}"></div>
+            </div>
             <p class="hero-present">📍 Línea temporal de referencia: <strong th:text="${anoPresenteFormateado}">2026 d.C.</strong></p>
             <a href="/logica-temporal" class="btn btn-outline">🧠 Ver la lógica temporal (para curiosos)</a>
         </div>

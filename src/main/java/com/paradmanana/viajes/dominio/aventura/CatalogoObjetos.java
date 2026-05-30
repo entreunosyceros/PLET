@@ -59,12 +59,72 @@ public final class CatalogoObjetos {
             true
     );
 
+    public static final ObjetoTemporal LODO_VOLCANICO = new ObjetoTemporal(
+            "lodo-volcanico",
+            "Lodo termal jurásico (olía a azufre y gloria)",
+            Era.DINOSAURIOS,
+            80,
+            0,
+            false
+    );
+
+    public static final ObjetoTemporal PLUMA_PTERODACTILO = new ObjetoTemporal(
+            "pluma-pterodactilo",
+            "Pluma de pterodáctilo con ticket de acceso",
+            Era.DINOSAURIOS,
+            130,
+            0,
+            false
+    );
+
+    public static final ObjetoTemporal ANFORA_ROTA = new ObjetoTemporal(
+            "anfora-rota",
+            "Ánfora rota con inscripción «yo voté no»",
+            Era.ROMA,
+            55,
+            0,
+            false
+    );
+
+    public static final ObjetoTemporal PERGAMINO_FALSO = new ObjetoTemporal(
+            "pergamino-falso",
+            "Pergamino de profecía claramente falsificado",
+            Era.ROMA,
+            40,
+            10,
+            false
+    );
+
+    public static final ObjetoTemporal BEBIDA_NEURAL = new ObjetoTemporal(
+            "bebida-neural",
+            "Bebida neural «Sabor a nostalgia»",
+            Era.ANO_3000,
+            90,
+            15,
+            false
+    );
+
+    public static final ObjetoTemporal STICKER_HOVER = new ObjetoTemporal(
+            "sticker-hover",
+            "Pegatina holográfica «Mi otro hoverboard es más rápido»",
+            Era.ANO_3000,
+            35,
+            0,
+            false
+    );
+
     private static final List<ObjetoTemporal> TODOS = List.of(
             RONCHON_COSMICO,
             DENARIO_ROMANO,
             MAPA_CUERO,
             BOTA_PERDIDA,
-            ALMANAQUE_3000
+            ALMANAQUE_3000,
+            LODO_VOLCANICO,
+            PLUMA_PTERODACTILO,
+            ANFORA_ROTA,
+            PERGAMINO_FALSO,
+            BEBIDA_NEURAL,
+            STICKER_HOVER
     );
 
     /** Una pieza de museo por era; completarlas desbloquea Agente Veterano (−5 % permanente). */

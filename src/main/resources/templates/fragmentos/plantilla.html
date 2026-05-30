@@ -11,9 +11,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <meta th:if="${paradojaActiva}" name="ventana-paradoja-reapariciones" content="5"/>
+    <script th:if="${paradojaActiva}" th:src="@{/js/ventana-flotante.js}" defer></script>
 </head>
 
-<nav th:fragment="navegacion" class="navbar">
+<nav th:fragment="navegacion" class="navbar"
+     th:classappend="${paradojaActiva} ? ' navbar--paradoja' : ''">
     <!-- cantidadCarrito viene de AtributosGlobales (@ControllerAdvice) -->
     <a href="/" class="logo">
         <img class="logo-img" th:src="@{/img/logo.png}" alt="Para luego es tarde — Viajes a tiempo S.M.L."/>
@@ -62,6 +65,43 @@
     <span class="ayuda-precio__icon" aria-hidden="true">?</span>
     <span class="ayuda-precio__text">¿Qué es esto?</span>
 </a>
+
+<!-- Normas del presente (regreso a la línea temporal de referencia) -->
+<aside th:fragment="saborPresente(normas, compacto)"
+       class="era-sabor era-sabor--presente"
+       th:classappend="${compacto} ? ' era-sabor--compacto' : ''">
+    <p class="era-sabor__lema" th:text="'«' + ${normas.lema()} + '»'">«Lema presente»</p>
+
+    <div th:if="${!compacto}" class="era-sabor__grid">
+        <div class="era-sabor__bloque era-sabor__bloque--advertencias">
+            <h4 class="era-sabor__titulo">⚠️ Advertencias</h4>
+            <ul class="era-sabor__lista">
+                <li th:each="item : ${normas.advertencias()}" th:text="${item}">Advertencia</li>
+            </ul>
+        </div>
+        <div class="era-sabor__bloque era-sabor__bloque--curiosidades">
+            <h4 class="era-sabor__titulo">🔍 Curiosidades</h4>
+            <ul class="era-sabor__lista">
+                <li th:each="item : ${normas.curiosidades()}" th:text="${item}">Curiosidad</li>
+            </ul>
+        </div>
+        <div class="era-sabor__bloque era-sabor__bloque--restricciones">
+            <h4 class="era-sabor__titulo">🚫 Restricciones</h4>
+            <ul class="era-sabor__lista">
+                <li th:each="item : ${normas.restricciones()}" th:text="${item}">Restricción</li>
+            </ul>
+        </div>
+    </div>
+
+    <ul th:if="${compacto}" class="era-sabor__destacados">
+        <li class="era-sabor__destacado era-sabor__destacado--advertencia"
+            th:text="${normas.advertencias()[0]}">Advertencia</li>
+        <li class="era-sabor__destacado era-sabor__destacado--curiosidad"
+            th:text="${normas.curiosidades()[0]}">Curiosidad</li>
+        <li class="era-sabor__destacado era-sabor__destacado--restriccion"
+            th:text="${normas.restricciones()[0]}">Restricción</li>
+    </ul>
+</aside>
 
 <!-- Guía de humor y normas específicas de cada era -->
 <aside th:fragment="saborEra(era, compacto)"
@@ -124,7 +164,14 @@
               th:text="${obj.nombre() + (stat.last ? '' : ', ')}">Objeto</span>
     </div>
     <div class="panel-viajero__paradoja" th:if="${paradojaActiva}">
-        🌀 Paradoja temporal activa — procede con cautela
+        <p class="panel-viajero__paradoja-titulo">🌀 Paradoja temporal activa</p>
+        <p class="panel-viajero__paradoja-detalle" th:text="${mensajeParadoja}">
+            La línea temporal está inestable.
+        </p>
+        <p class="panel-viajero__paradoja-efecto" th:if="${recargoParadojaPorcentaje > 0}">
+            ⚡ Recargo de estabilización del <strong th:text="${recargoParadojaPorcentaje} + '%'">20%</strong>
+            en tu próximo billete · Seguro Mariposa ×3
+        </p>
     </div>
 </div>
 </html>

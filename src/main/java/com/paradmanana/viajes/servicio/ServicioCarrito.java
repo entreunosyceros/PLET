@@ -75,11 +75,14 @@ public class ServicioCarrito {
         return servicioAventuras.aplicarBeneficiosAlResumen(base);
     }
 
-    /** Descuenta créditos y consume el descuento % tras un pago confirmado. */
+    /** Descuenta créditos, consume el descuento % y liquida paradojas tras un pago confirmado. */
     public void aplicarBeneficiosTrasCompra(ResumenCarrito resumen) {
         servicioAventuras.consumirCreditosAplicados(resumen.descuentoCreditosAventura());
         if (resumen.descuentoPorcentajeAventura().compareTo(java.math.BigDecimal.ZERO) > 0) {
             servicioAventuras.consumirDescuentoCompra();
+        }
+        if (resumen.tieneRecargoParadoja()) {
+            servicioAventuras.resolverParadoja();
         }
     }
 

@@ -10,6 +10,16 @@
 
     <div th:replace="~{fragmentos/plantilla :: alertas}"></div>
 
+    <div th:if="${paradojaActiva}" class="alert alert-paradoja alert-paradoja--activa">
+        <strong>🌀 Paradoja temporal activa.</strong>
+        <span th:text="${mensajeParadoja}">La línea temporal está inestable.</span>
+        <span th:if="${recargoParadojaPorcentaje > 0}">
+            Tu próximo billete incluirá un recargo del
+            <strong th:text="${recargoParadojaPorcentaje} + '%'">20%</strong>
+            y el seguro Mariposa oscilará con triple intensidad.
+        </span>
+    </div>
+
     <div th:if="${!validacion.valido()}" class="alert alert-paradoja">
         <!-- Bloquea el pago si el validador detecta inconsistencias temporales -->
         <strong>Paradoja detectada:</strong>
@@ -83,6 +93,18 @@
                     <span>Total recargos solo ida</span>
                     <span th:text="${#numbers.formatDecimal(resumen.totalRecargosSoloIda, 1, 2)} + ' €'">0 €</span>
                 </div>
+            </div>
+
+            <div th:if="${resumen.tieneRecargoParadoja()}" class="recargo-paradoja">
+                <h3>🌀 Recargo por paradoja temporal</h3>
+                <div class="resumen-linea recargo">
+                    <span th:text="'Estabilización de línea (' + ${recargoParadojaPorcentaje} + '%)'">
+                        Estabilización de línea
+                    </span>
+                    <span th:text="'+ ' + ${#numbers.formatDecimal(resumen.recargoParadoja, 1, 2)} + ' €'">0 €</span>
+                </div>
+                <p class="descargo" th:text="${resumen.mensajeRecargoParadoja()}">Descargo</p>
+                <p class="beneficios-aventura__hint">Se liquida al confirmar este pedido y la paradoja quedará resuelta.</p>
             </div>
 
             <div th:if="${resumen.tieneBeneficiosAventura()}" class="beneficios-aventura">

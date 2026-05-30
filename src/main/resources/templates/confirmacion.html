@@ -44,7 +44,7 @@
 <main class="container confirmacion" id="confirmacionContenido"
       th:classappend="${!destinosViaje.isEmpty()} ? 'confirmacion--oculta' : ''">
     <!-- Oculto mientras dura la animación; visible al terminar el salto temporal -->
-    <div class="confirmacion-box" th:classappend="${erasAvisos != null and !erasAvisos.isEmpty()} ? 'confirmacion-box--con-avisos' : ''"
+    <div class="confirmacion-box" th:classappend="${esRegresoPresente or (erasAvisos != null and !erasAvisos.isEmpty())} ? 'confirmacion-box--con-avisos' : ''"
          th:with="esVuelta=${soloVuelta == true}">
         <div class="confirmacion-icon" th:text="${esVuelta} ? '⏳' : '✅'">✅</div>
         <h1 th:text="${esVuelta} ? '¡Regreso al presente!' : '¡Viaje confirmado!'">¡Viaje confirmado!</h1>
@@ -80,11 +80,19 @@
             Total pagado: <strong th:text="${#numbers.formatDecimal(total, 1, 2)} + ' €'">0 €</strong>
         </p>
 
-        <section th:if="${erasAvisos != null and !erasAvisos.isEmpty()}" class="confirmacion-avisos">
-            <h2 class="confirmacion-avisos__titulo" th:text="${esVuelta} ? '📋 Normas de la época que acabas de abandonar' : '📋 Normas de tu destino'">
-                Normas de tu destino
-            </h2>
-            <p class="confirmacion-avisos__intro">Recuerda cumplirlas. La agencia no se hace responsable de paradojas provocadas por T-Rex bien alimentados.</p>
+        <section th:if="${esRegresoPresente}" class="confirmacion-avisos">
+            <h2 class="confirmacion-avisos__titulo">📋 Normas del presente</h2>
+            <p class="confirmacion-avisos__intro">
+                Has vuelto a la línea temporal de referencia. Estas normas aplican aquí y ahora — no las de la época que acabas de dejar.
+            </p>
+            <div th:replace="~{fragmentos/plantilla :: saborPresente(normas=${normasPresente}, compacto=false)}"></div>
+        </section>
+
+        <section th:if="${!esRegresoPresente and erasAvisos != null and !erasAvisos.isEmpty()}" class="confirmacion-avisos">
+            <h2 class="confirmacion-avisos__titulo">📋 Normas de tu destino</h2>
+            <p class="confirmacion-avisos__intro">
+                Recuerda cumplirlas en la época a la que viajas. La agencia no se hace responsable de paradojas provocadas por incumplirlas.
+            </p>
             <div th:each="eraAviso : ${erasAvisos}">
                 <div th:replace="~{fragmentos/plantilla :: saborEra(era=${eraAviso}, compacto=false)}"></div>
             </div>
