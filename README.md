@@ -1,5 +1,7 @@
 # ⏳ Para luego es tarde — Viajes a tiempo S.M.L.
 
+<img width="1080" height="1805" alt="2026-05-28_19-36" src="https://github.com/user-attachments/assets/685ad0bb-3dc6-4d70-8b40-d43a9ac79c05" />
+
 > **No esperes, ¡SALTA!**
 
 Tienda web Java para vender billetes de viajes temporales. Proyecto educativo diseñado para **romper el esquema de la típica tienda online** y obligar a leer el código por curiosidad, ya que cuando tengo tiempo libre me da por pensar y hacer cosas mientras espero la excepción que no da llegado.
