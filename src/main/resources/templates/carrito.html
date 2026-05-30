@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/plantilla :: cabecera('Carrito')}"></head>
+<body>
+<nav th:replace="~{fragmentos/plantilla :: navegacion}"></nav>
+
+<main class="container">
+    <h1>🛒 Tu carrito temporal</h1>
+    <p class="carrito-intro">Revisa tus billetes aquí. Puedes seguir comprando o confirmar la compra cuando estés listo.</p>
+
+    <div th:replace="~{fragmentos/plantilla :: alertas}"></div>
+
+    <div th:if="${!validacion.valido()}" class="alert alert-paradoja">
+        <!-- Bloquea el pago si el validador detecta inconsistencias temporales -->
+        <strong>Paradoja detectada:</strong>
+        <span th:text="${validacion.mensaje()}">Error</span>
+    </div>
+
+    <div th:if="${carrito.obtenerCantidad() == 0}" class="carrito-vacio">
+        <p>Tu carrito está vacío. ¿A dónde viajamos?</p>
+        <a href="/" class="btn btn-primary">Explorar destinos</a>
+    </div>
+
+    <div th:if="${carrito.obtenerCantidad() > 0}">
+        <table class="tabla-carrito">
+            <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Destino</th>
+                <th>Ruta</th>
+                <th>Desglose precio</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="b : ${carrito.obtenerBilletes()}">
+                <td>
+                    <span th:class="'badge badge-' + ${b.tipo.name().toLowerCase()}"
+                          th:text="${b.tipo.etiqueta}">Ida</span>
+                </td>
+                <td th:text="${b.era.emoji + ' ' + b.era.nombre}">Destino</td>
+                <td>
+                    <span th:text="${b.anoOrigen.formatear()}">Origen</span>
+                    → <span th:text="${b.anoDestino.formatear()}">Destino</span>
+                    <br/><small class="text-muted" th:text="${#numbers.formatInteger(b.distanciaTemporal(), 3, 'POINT')} + ' años'">0</small>
+                </td>
+                <td class="desglose-celda">
+                    <small>
+                        Base <span th:text="${#numbers.formatDecimal(b.precioBase, 1, 2)} + ' €'">0 €</span><br/>
+                        ⛽ Combustible <span th:text="${#numbers.formatDecimal(b.costeCombustible, 1, 2)} + ' €'">0 €</span><br/>
+                        ⚠️ Riesgo hist. <span th:text="${#numbers.formatDecimal(b.recargoRiesgo, 1, 2)} + ' €'">0 €</span><br/>
+                        🦋 Seguro Mariposa <span th:text="${#numbers.formatDecimal(b.seguroMariposa, 1, 2)} + ' €'">0 €</span>
+                    </small>
+                </td>
+                <td th:text="${#numbers.formatDecimal(b.precioTotal, 1, 2)} + ' €'">0 €</td>
+                <td>
+                    <form th:action="@{/carrito/eliminar/{identificador}(identificador=${b.identificador})}" method="post">
+                        <button type="submit" class="btn btn-danger btn-sm">✕</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <section class="resumen-pago">
+            <h2>Resumen del pedido</h2>
+            <div class="resumen-linea">
+                <span>Subtotal billetes</span>
+                <span th:text="${#numbers.formatDecimal(resumen.subtotalBilletes, 1, 2)} + ' €'">0 €</span>
+            </div>
+
+            <div th:if="${resumen.tieneRecargosSoloIda()}" class="recargos-solo-ida">
+                <h3>⚠️ Recargos por viajes de solo ida</h3>
+                <article th:each="recargo : ${resumen.recargosSoloIda()}" class="recargo-item">
+                    <div class="resumen-linea recargo">
+                        <span th:text="${recargo.era().emoji + ' ' + recargo.era().nombre + ' (solo ida)'}">Era</span>
+                        <span th:text="'+ ' + ${#numbers.formatDecimal(recargo.importe(), 1, 2)} + ' €'">0 €</span>
+                    </div>
+                    <p class="descargo" th:text="${recargo.descargo()}">Descargo</p>
+                </article>
+                <div class="resumen-linea">
+                    <span>Total recargos solo ida</span>
+                    <span th:text="${#numbers.formatDecimal(resumen.totalRecargosSoloIda, 1, 2)} + ' €'">0 €</span>
+                </div>
+            </div>
+
+            <div th:if="${resumen.tieneBeneficiosAventura()}" class="beneficios-aventura">
+                <h3>📖 Beneficios de aventuras</h3>
+                <div th:if="${resumen.descuentoPermanenteAventura.compareTo(T(java.math.BigDecimal).ZERO) > 0}" class="resumen-linea descuento">
+                    <span>Agente Veterano (−5 % permanente)</span>
+                    <span th:text="'− ' + ${#numbers.formatDecimal(resumen.descuentoPermanenteAventura, 1, 2)} + ' €'">0 €</span>
+                </div>
+                <div th:if="${resumen.descuentoPorcentajeAventura.compareTo(T(java.math.BigDecimal).ZERO) > 0}" class="resumen-linea descuento">
+                    <span>Cupón / consumible aplicado</span>
+                    <span th:text="'− ' + ${#numbers.formatDecimal(resumen.descuentoPorcentajeAventura, 1, 2)} + ' €'">0 €</span>
+                </div>
+                <div th:if="${resumen.descuentoCreditosAventura.compareTo(T(java.math.BigDecimal).ZERO) > 0}" class="resumen-linea descuento">
+                    <span>Créditos aplicados (1 crédito = 1 €)</span>
+                    <span th:text="'− ' + ${#numbers.formatDecimal(resumen.descuentoCreditosAventura, 1, 2)} + ' €'">0 €</span>
+                </div>
+                <p class="beneficios-aventura__hint">Créditos y cupones % se consumen al pagar. El −5 % veterano requiere las 3 piezas del museo en inventario.</p>
+            </div>
+
+            <div th:if="${!consumibles.isEmpty()}" class="consumibles-carrito">
+                <h3>🎒 Usar objeto consumible</h3>
+                <p class="beneficios-aventura__hint">Consume el objeto del inventario y aplica su descuento a este pedido.</p>
+                <div th:each="obj : ${consumibles}" class="consumible-item">
+                    <span th:text="${obj.nombre()} + ' (−' + ${obj.descuentoConsumible()} + '%)'">Objeto</span>
+                    <form th:action="@{/carrito/usar-objeto}" method="post">
+                        <input type="hidden" name="objetoId" th:value="${obj.id()}"/>
+                        <button type="submit" class="btn btn-secondary btn-sm"
+                                th:text="'Aplicar ' + ${obj.nombre()}">Aplicar</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="resumen-linea resumen-total">
+                <span>Total estimado</span>
+                <span th:text="${#numbers.formatDecimal(resumen.totalFinal, 1, 2)} + ' €'">0 €</span>
+            </div>
+        </section>
+
+        <div class="carrito-actions">
+            <a href="/" class="btn btn-outline">← Seguir comprando</a>
+            <form th:action="@{/carrito/vaciar}" method="post">
+                <button type="submit" class="btn btn-outline">Vaciar carrito</button>
+            </form>
+        </div>
+
+        <section class="paso-confirmar">
+            <h2>Paso final: confirmar compra</h2>
+            <p>Cuando hayas añadido todos los billetes que necesitas, confirma el viaje temporal.</p>
+            <form th:action="@{/compra/confirmar}" method="post">
+                <button type="submit" class="btn btn-primary btn-lg"
+                        th:disabled="${!validacion.valido()}">
+                    💳 Pagar y confirmar viaje
+                </button>
+            </form>
+        </section>
+    </div>
+</main>
+
+<footer th:replace="~{fragmentos/plantilla :: pie}"></footer>
+</body>
+</html>

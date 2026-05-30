@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/plantilla :: cabecera('Aventuras')}"></head>
+<body class="pagina-aventuras">
+<nav th:replace="~{fragmentos/plantilla :: navegacion}"></nav>
+
+<main class="container">
+    <div th:replace="~{fragmentos/plantilla :: alertas}"></div>
+    <div th:replace="~{fragmentos/plantilla :: panelViajero}"></div>
+
+    <header class="aventuras-hero">
+        <p class="aventuras-badge">📖 Elige tu propia aventura</p>
+        <h1>Encuentros temporales</h1>
+        <p class="aventuras-intro">
+            Eventos textuales que se activan al llegar a una época. Lee la situación,
+            elige con un botón y asume las consecuencias en créditos, inventario o línea temporal.
+        </p>
+    </header>
+
+    <section th:if="${enPresente}" class="aventuras-vacio">
+        <h2>⏳ Aún no has viajado</h2>
+        <p>Las aventuras solo ocurren cuando estás físicamente en una época histórica.</p>
+        <p>Compra un billete de ida, confirma el pago y vuelve aquí desde tu destino.</p>
+        <a href="/" class="btn btn-primary">Ir al catálogo de destinos</a>
+    </section>
+
+    <section th:if="${!enPresente and escenasJugables.isEmpty() and escenasCompletadas.isEmpty()}" class="aventuras-vacio">
+        <h2>🌿 Sin novedades en esta época</h2>
+        <p>No hay encuentros registrados aquí… por ahora. La agencia está redactando nuevos capítulos.</p>
+        <a th:href="@{/era/{c}(c=${eraViajeroCodigo})}" class="btn btn-outline">Volver a la ficha de era</a>
+    </section>
+
+    <section th:if="${!escenasJugables.isEmpty()}" class="aventuras-seccion">
+        <h2>🎭 Disponibles ahora</h2>
+        <p class="aventuras-hint">Estás en el lugar indicado. Solo puedes jugar cada escena una vez por sesión.</p>
+        <div class="aventuras-grid">
+            <article th:each="escena : ${escenasJugables}" class="aventura-card"
+                     th:classappend="' aventura-card--' + ${escena.era().claseCss}">
+                <span class="aventura-card__emoji" th:text="${escena.era().emoji}">🦖</span>
+                <h3 th:text="${escena.titulo()}">Título</h3>
+                <p class="aventura-card__era" th:text="${escena.era().nombre}">Era</p>
+                <p class="aventura-card__resumen" th:text="${escena.resumen()}">Resumen</p>
+                <a th:href="@{/aventuras/{id}(id=${escena.id()})}" class="btn btn-primary">Comenzar escena</a>
+            </article>
+        </div>
+    </section>
+
+    <section th:if="${!escenasBloqueadas.isEmpty()}" class="aventuras-seccion aventuras-seccion--bloqueadas">
+        <h2>🔒 Bloqueadas (faltan llaves)</h2>
+        <p class="aventuras-hint">Algunas misiones requieren objetos de aventuras anteriores. Consíguelos y vuelve.</p>
+        <div class="aventuras-grid">
+            <article th:each="bloqueo : ${escenasBloqueadas}" class="aventura-card aventura-card--bloqueada">
+                <span class="aventura-card__emoji" th:text="${bloqueo.escena().era().emoji}">🏛️</span>
+                <h3 th:text="${bloqueo.escena().titulo()}">Título</h3>
+                <p class="aventura-card__resumen" th:text="${bloqueo.escena().resumen()}">Resumen</p>
+                <p class="aventura-card__bloqueo" th:text="${bloqueo.motivo()}">Motivo</p>
+            </article>
+        </div>
+    </section>
+
+    <section th:if="${!escenasCompletadas.isEmpty()}" class="aventuras-seccion aventuras-seccion--historial">
+        <h2>📜 Capítulos completados</h2>
+        <ul class="aventuras-historial">
+            <li th:each="escena : ${escenasCompletadas}">
+                <span th:text="${escena.era().emoji + ' ' + escena.titulo()}">Escena</span>
+                <span class="aventuras-historial__estado">✓ Jugada</span>
+            </li>
+        </ul>
+    </section>
+</main>
+
+<footer th:replace="~{fragmentos/plantilla :: pie}"></footer>
+</body>
+</html>

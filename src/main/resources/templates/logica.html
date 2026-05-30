@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/plantilla :: cabecera('Lógica Temporal')}"></head>
+<body>
+<nav th:replace="~{fragmentos/plantilla :: navegacion}"></nav>
+
+<main class="container logica-page">
+    <a href="/" class="back-link">← Volver</a>
+    <h1>🧠 Lógica temporal del sistema</h1>
+    <p class="intro">Esta página documenta las reglas de negocio del simulador. Si algo en la web te parece absurdo, probablemente es intencional.</p>
+
+    <section class="logica-seccion logica-seccion--estado">
+        <h2>Tu estado ahora mismo</h2>
+        <p>Posición temporal en sesión: <strong th:text="${posicionViajero}">2026 d.C. (presente)</strong></p>
+        <p>Título: <strong th:text="${tituloAgente}">Viajero temporal</strong>
+           · Créditos: <strong th:text="${creditosViajero}">0</strong></p>
+        <p th:if="${!inventarioViajero.isEmpty()}">
+            Inventario:
+            <span th:each="obj, stat : ${inventarioViajero}"
+                  th:text="${obj.nombre() + (stat.last ? '' : ', ')}">Objeto</span>
+        </p>
+        <p th:if="${inventarioViajero.isEmpty()}">Inventario vacío — consigue souvenirs en <a href="/aventuras">aventuras</a>.</p>
+        <p th:if="${!erasVueltaPrepagada.isEmpty()}">
+            Billetes de vuelta prepagados (sin usar):
+            <span th:each="codigo : ${erasVueltaPrepagada}" class="badge-vuelta" th:text="${codigo}">ROMA</span>
+        </p>
+        <p th:if="${erasVueltaPrepagada.isEmpty()}">No tienes vueltas prepagadas pendientes.</p>
+        <p th:if="${paradojaActiva}" class="aviso-paradoja">🌀 Paradoja temporal activa en tu sesión.</p>
+        <p th:if="${coleccionMuseoCompleta}">⭐ Colección del museo completa — −5 % permanente en billetes.</p>
+    </section>
+
+    <section class="logica-seccion">
+        <h2>1. Tipado fuerte (<code>AnoTemporal</code>)</h2>
+        <p>Record con <code>int valor</code> — no un simple entero suelto:</p>
+        <pre class="codigo">AnoTemporal.de(-117).formatear()  → "117 a.C."
+AnoTemporal.de(0)                  → IllegalArgumentException
+  "El año 0 no existe en la continuidad espacio-temporal."</pre>
+        <p>Comparación cronológica: <code>-66_000_000 &lt; -117 &lt; 2026 &lt; 3000</code></p>
+    </section>
+
+    <section class="logica-seccion">
+        <h2>2. El presente (<code>LineaTemporal</code>)</h2>
+        <p>Ancla temporal: <strong th:text="${lineaTemporal.anhoActual} + ' d.C.'">2026 d.C.</strong></p>
+        <p>El 2024 <em>es pasado</em> respecto al presente, pero <strong>no es destino vendible</strong>.
+           Solo existen saltos a épocas del catálogo (<code>Era</code>).</p>
+    </section>
+
+    <section class="logica-seccion">
+        <h2>3. Posición del viajero (<code>ServicioPosicionViajero</code>)</h2>
+        <p>Cada sesión HTTP guarda <strong>dónde estás</strong> en la línea temporal. La barra de navegación muestra «Estás en…».</p>
+        <ul class="reglas-lista">
+            <li>Al entrar → presente (<span th:text="${lineaTemporal.anhoActual}">2026</span> d.C.)</li>
+            <li>Tras confirmar una <strong>ida</strong> → te mueves a la época destino</li>
+            <li>Tras <strong>usar</strong> un billete de vuelta prepagado → vuelves al presente</li>
+            <li>Tras comprar <strong>solo vuelta</strong> estando ya en la época → regreso inmediato al confirmar</li>
+        </ul>
+    </section>
+
+    <section class="logica-seccion">
+        <h2>4. Ida y vuelta: reglas de compra</h2>
+        <p>Lo que puedes hacer depende de <strong>dónde estás</strong> y de <strong>qué hay en el carrito</strong>:</p>
+        <table class="tabla-logica">
+            <thead>
+            <tr>
+                <th>Situación</th>
+                <th>Ida</th>
+                <th>Vuelta (carrito)</th>
+                <th>Usar vuelta prepagada</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>En el presente, carrito vacío</td>
+                <td>✅ Sí</td>
+                <td>❌ No</td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td>En el presente, ida en carrito</td>
+                <td>❌ Ya añadida</td>
+                <td>✅ Sí (misma era)</td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td>En una época (ida ya pagada)</td>
+                <td>❌ No</td>
+                <td>✅ Sí (si no tienes prepagada)</td>
+                <td>✅ Si compraste ida+vuelta juntas</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="logica-seccion">
+        <h2>5. Vuelta prepagada (<code>ServicioBilletesVuelta</code>)</h2>
+        <p>Si compras <strong>ida + vuelta</strong> en el mismo pedido:</p>
+        <ol class="reglas-lista">
+            <li>Al confirmar el pago → solo se ejecuta la <strong>ida</strong> (animación incluida)</li>
+            <li>La <strong>vuelta</strong> se guarda como billete prepagado (<code>@SessionScope</code>)</li>
+            <li>En la época destino aparece el botón <strong>«Viajar al presente — usar billete de vuelta»</strong></li>
+            <li>Al pulsarlo (<code>POST /viaje/usar-vuelta</code>) → consumes el billete y regresas al presente con animación</li>
+        </ol>
+        <pre class="codigo">Confirmar compra [ida Roma + vuelta Roma]
+  → aplicarBilletes():
+       ida  → posición = 117 a.C.
+       vuelta (misma compra) → ServicioBilletesVuelta.guardar()
+  → NO regresas al 2026 automáticamente</pre>
+    </section>
+
+    <section class="logica-seccion" id="precio">
+        <h2>6. Desglose del precio (<code>CalculadoraPrecios</code>)</h2>
+        <p>Cada billete muestra cuatro líneas en el catálogo, la ficha de era y el carrito. El origen del viaje es tu <strong>posición actual</strong>, no siempre el presente.</p>
+        <pre class="codigo">precio total = 49,99 € (base fija)
+             + combustible temporal
+             + recargo por riesgo histórico
+             + seguro Efecto Mariposa</pre>
+
+        <h3 class="logica-subtitulo" id="combustible">⛽ Combustible temporal</h3>
+        <p><strong>Qué es:</strong> el coste de cruzar años en la línea temporal. Cuanto más lejos viajas, más combustible gasta la máquina, ya que alcanzar la velocidad absurda chupa que no veas.</p>
+        <p><strong>Cómo se calcula:</strong> distancia en años entre origen y destino (valor absoluto), con tarifa escalonada:</p>
+        <ul class="reglas-lista">
+            <li>Tramos de <strong>1 millón de años o más</strong> → <strong>0,15 €</strong> por millón completo</li>
+            <li>Años restantes (o viajes cortos) → <strong>0,008 €</strong> por año</li>
+        </ul>
+        <p>Por eso los dinosaurios (~66 millones de años) no cuestan millones de euros: los saltos prehistóricos tienen tarifa reducida por bloque. Roma o el año 3000 pagan casi todo al precio «por año» porque están cerca del presente.</p>
+        <p><strong>Ejemplo ida desde 2026:</strong> Roma (~2.143 años) ≈ 17 € · Dinosaurios (~66 millones) ≈ 26 € · Año 3000 (~974 años) ≈ 8 €</p>
+
+        <h3 class="logica-subtitulo" id="riesgo">⚠️ Riesgo histórico</h3>
+        <p><strong>Qué es:</strong> un recargo porque no todas las épocas son igual de peligrosas o inestables. Cada destino tiene un índice de <strong>0 a 10</strong>.</p>
+        <p><strong>Cómo se calcula:</strong> <code>recargo = índice × 12,50 €</code></p>
+        <table class="tabla-logica">
+            <thead>
+            <tr>
+                <th>Destino</th>
+                <th>Índice</th>
+                <th>Recargo</th>
+                <th>Por qué</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>🦖 Dinosaurios</td>
+                <td>9,8 / 10</td>
+                <td>122,50 €</td>
+                <td>Depredadores, extinción, caos prehistórico</td>
+            </tr>
+            <tr>
+                <td>🏛️ Antigua Roma</td>
+                <td>4,2 / 10</td>
+                <td>52,50 €</td>
+                <td>Imperio estable, riesgo moderado</td>
+            </tr>
+            <tr>
+                <td>🚀 Año 3000</td>
+                <td>6,5 / 10</td>
+                <td>81,25 €</td>
+                <td>Futuro incierto, tecnología desconocida</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h3 class="logica-subtitulo" id="mariposa">🦋 Seguro Efecto Mariposa</h3>
+        <p><strong>Qué es:</strong> un ajuste final inspirado en la paradoja del efecto mariposa — pequeñas fluctuaciones en la línea temporal que pueden subir o bajar ligeramente el precio.</p>
+        <p><strong>Cómo se calcula:</strong> un porcentaje aleatorio entre <strong>-1 % y +1 %</strong> sobre el subtotal (base + combustible + riesgo). Puede ser descuento o recargo.</p>
+        <ul class="reglas-lista">
+            <li>Se genera en <strong>cada petición HTTP</strong> (<code>@RequestScope</code>): al recargar la página el porcentaje puede cambiar</li>
+            <li>Lo ves en pantalla como «Seguro Efecto Mariposa (+0,43 %)» o similar</li>
+            <li>Subtotal 200 € con +0,43 % → +0,86 € · con -0,87 % → -1,74 €</li>
+        </ul>
+        <p>No es un seguro opcional: forma parte del precio de cada billete y refleja que el tejido temporal no es 100 % predecible.</p>
+    </section>
+
+    <section class="logica-seccion">
+        <h2>7. Validación de paradojas (<code>ValidadorParadojas</code>)</h2>
+        <ul class="reglas-lista">
+            <li>❌ Ida estando fuera del presente</li>
+            <li>❌ Vuelta sin ida en carrito (desde presente) ni estando en la época</li>
+            <li>❌ Comprar otra vuelta si ya tienes una prepagada sin usar</li>
+            <li>❌ Dos idas al mismo destino</li>
+            <li>❌ Vuelta con origen anterior al destino de la ida (mismo pedido)</li>
+            <li>❌ Encadenar idas fuera de orden cronológico</li>
+        </ul>
+        <div class="ejemplo-paradoja">
+            <h3>Flujo al añadir billete:</h3>
+            <pre class="codigo">¿Es VUELTA?
+  Sí → ¿Estás en la era O ida en carrito? → ¿Ya prepagada? → ¿Duplicada?
+  No → ¿Estás en presente? → ¿Ida duplicada? → ¿Orden cronológico?
+  OK → Añadir al carrito</pre>
+        </div>
+    </section>
+
+    <section class="logica-seccion">
+        <h2>8. Recargo solo ida (<code>CalculadorCarrito</code>)</h2>
+        <p>Si confirmas compra con <strong>ida pero sin vuelta</strong> (ni en carrito ni prepagada):</p>
+        <pre class="codigo">recargo = (precio ida × 30%) + (índice riesgo × 6,25 €)</pre>
+        <p>Con descargo legal visible en el carrito.</p>
+    </section>
+
+    <section class="logica-seccion">
+        <h2>9. Animación de salto temporal</h2>
+        <p>Tras confirmar compra o usar vuelta prepagada, <code>/confirmacion</code> muestra una animación JS
+           (<code>salto-temporal.js</code>) que recorre los años hasta el destino.</p>
+        <ul class="reglas-lista">
+            <li>Compra ida (+ vuelta en carrito) → animación solo hasta la época (no al presente)</li>
+            <li>Usar vuelta prepagada → animación de regreso al presente</li>
+            <li>Compra solo vuelta en la época → animación directa al presente</li>
+        </ul>
+    </section>
+
+    <section class="logica-seccion" id="aventuras">
+        <h2>10. Libro-juego «Elige tu propia aventura»</h2>
+        <p>Encuentros textuales que solo puedes jugar <strong>estando en la era</strong> correspondiente, una vez por sesión.
+           Rutas: <a href="/aventuras">/aventuras</a> · <code>/aventuras/{id}</code> · <code>POST /aventuras/{id}</code>.</p>
+
+        <h3 class="logica-subtitulo">Cómo crear una aventura nueva</h3>
+        <p>Edita <code>CatalogoAventuras.java</code> y añade un bloque a la lista <code>TODAS</code>:</p>
+        <pre class="codigo">new EscenaAventura(
+    "mi-aventura-id",           // URL: /aventuras/mi-aventura-id
+    Era.ROMA,
+    "Título de la escena",
+    "Resumen de una línea",
+    "Párrafo narrativo de introducción…",
+    List.of(
+        new OpcionAventura("opcion-a", "Texto botón A", "Resultado A…",
+            EfectosOpcion.creditos(50)),
+        new OpcionAventura("opcion-b", "Texto botón B", "Resultado B…",
+            new EfectosOpcion(-30, false, Optional.empty(),
+                Optional.of(CatalogoObjetos.DENARIO_ROMANO.id()), 0, false))
+    ),
+    Optional.of("mapa-cuero")   // opcional: id de objeto llave
+)</pre>
+        <p>No hace falta tocar HTML ni controladores: Thymeleaf lee el catálogo y genera los formularios POST.</p>
+
+        <h3 class="logica-subtitulo" id="recompensas">Cómo crear recompensas (objetos)</h3>
+        <p>Los objetos viven en <code>CatalogoObjetos.java</code>. Cada uno define:</p>
+        <table class="tabla-logica">
+            <thead>
+            <tr><th>Campo</th><th>Significado</th></tr>
+            </thead>
+            <tbody>
+            <tr><td><code>id</code></td><td>Identificador en inventario (sesión)</td></tr>
+            <tr><td><code>nombre</code></td><td>Texto visible en pantalla</td></tr>
+            <tr><td><code>era</code></td><td>Era de origen (museo / lore)</td></tr>
+            <tr><td><code>precioReventa</code></td><td>Créditos al vender en el presente (0 = no vendible)</td></tr>
+            <tr><td><code>descuentoConsumible</code></td><td>% al consumir en carrito (0 = no consumible)</td></tr>
+            <tr><td><code>coleccionable</code></td><td>Si cuenta para el Museo del Tiempo</td></tr>
+            </tbody>
+        </table>
+        <p>En una opción de aventura, regala el objeto con
+           <code>Optional.of(CatalogoObjetos.MI_OBJETO.id())</code> dentro de <code>EfectosOpcion</code>.</p>
+        <p>Las <strong>llaves</strong> son aventuras con <code>objetoRequerido</code>: p. ej. «El Tesoro del César»
+           exige el mapa de cuero obtenido antes en «El Cartógrafo de la Subura».</p>
+
+        <h3 class="logica-subtitulo" id="canjear">Cómo canjear recompensas (economía circular)</h3>
+        <p>Ciclo: <strong>viajas → aventuras → ganas → reinviertes</strong>.</p>
+        <table class="tabla-logica">
+            <thead>
+            <tr><th>Recompensa</th><th>Dónde canjearla</th><th>Efecto</th></tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>💰 Créditos</td>
+                <td><a href="/carrito">Carrito</a></td>
+                <td>1 crédito = 1 € de descuento automático al pagar (se consumen al confirmar)</td>
+            </tr>
+            <tr>
+                <td>🎒 Consumible (p. ej. Almanaque)</td>
+                <td>Carrito → «Aplicar…»</td>
+                <td><code>POST /carrito/usar-objeto</code> — consume el objeto y aplica su % a este pedido</td>
+            </tr>
+            <tr>
+                <td>🏛️ Souvenir vendible</td>
+                <td><a href="/coleccion">/coleccion</a> (solo en presente)</td>
+                <td><code>POST /coleccion/vender</code> — convierte el objeto en créditos (p. ej. denario → 500)</td>
+            </tr>
+            <tr>
+                <td>⭐ Piezas del museo (×3 eras)</td>
+                <td><a href="/coleccion">/coleccion</a></td>
+                <td>Con las 3 en inventario → título <em>Agente Veterano</em> y −5 % permanente en billetes</td>
+            </tr>
+            </tbody>
+        </table>
+        <p>Estado gestionado por <code>ServicioAventuras</code> (<code>@SessionScope</code>).
+           Los descuentos se calculan en <code>ServicioCarrito.obtenerResumen()</code>.</p>
+    </section>
+
+    <section class="logica-seccion" id="estructura">
+        <h2>11. Estructura del proyecto</h2>
+        <pre class="codigo">src/main/java/com/paradmanana/viajes/
+├── AplicacionPrincipal.java
+├── dominio/
+│   ├── AnoTemporal, LineaTemporal, Era, Billete, Carrito, TipoBillete
+│   └── aventura/
+│       ├── EscenaAventura, OpcionAventura, EfectosOpcion
+│       ├── CatalogoAventuras      ← escenas del libro-juego
+│       ├── CatalogoObjetos        ← souvenirs y recompensas
+│       └── ObjetoTemporal
+├── servicio/
+│   ├── CalculadoraPrecios, SeguroEfectoMariposa
+│   ├── ValidadorParadojas, CalculadorCarrito, ServicioCarrito
+│   ├── ServicioPosicionViajero, ServicioBilletesVuelta
+│   └── ServicioAventuras          ← créditos, inventario, museo, descuentos
+├── controlador/
+│   ├── ControladorTienda          ← catálogo, carrito, compra, confirmación
+│   ├── ControladorAventuras       ← /aventuras
+│   └── ControladorColeccion       ← /coleccion (museo + empeño)
+├── configuracion/
+│   ├── AtributosGlobales          ← datos comunes en todas las vistas
+│   └── ConfiguracionWeb
+└── vista/
+    └── DestinoAnimacion            ← datos para salto-temporal.js
+
+src/main/resources/
+├── templates/
+│   ├── inicio, era, carrito, confirmacion, logica
+│   ├── aventuras, aventura, aventura-resultado, coleccion
+│   └── fragmentos/plantilla.html
+└── static/
+    ├── css/estilos.css
+    └── js/salto-temporal.js</pre>
+        <p>¡Regla de oro para escalar esto!: editar siempre <code>src/main/resources/</code> y <code>src/main/java/</code>,
+           nunca la carpeta <code>target/</code> (ya que todo lo que hay ahí se regenera al compilar).</p>
+    </section>
+</main>
+
+<footer th:replace="~{fragmentos/plantilla :: pie}"></footer>
+</body>
+</html>

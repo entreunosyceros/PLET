@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/plantilla :: cabecera('Mi Colección Temporal')}"></head>
+<body class="pagina-coleccion">
+<nav th:replace="~{fragmentos/plantilla :: navegacion}"></nav>
+
+<main class="container">
+    <div th:replace="~{fragmentos/plantilla :: alertas}"></div>
+    <div th:replace="~{fragmentos/plantilla :: panelViajero}"></div>
+
+    <header class="coleccion-hero">
+        <p class="coleccion-badge">🏛️ Museo del Tiempo</p>
+        <h1>Mi Colección Temporal</h1>
+        <p class="coleccion-intro">
+            Economía circular temporal: gana objetos en aventuras, consúmelos en el carrito,
+            véndelos en el presente o completa el museo para ser <strong>Agente Veterano</strong>
+            (−5 % permanente en billetes).
+        </p>
+    </header>
+
+    <section class="coleccion-museo">
+        <h2>Vitrinas del museo</h2>
+        <p th:if="${coleccionMuseoCompleta}" class="aviso-paradoja aviso-exito">
+            ⭐ ¡Colección completa! Título desbloqueado: <strong th:text="${tituloAgente}">Agente Veterano</strong>
+            — −5 % en todos los billetes mientras conserves las tres piezas (o las vendas y pierdas el bonus).
+        </p>
+        <div class="coleccion-grid">
+            <article th:each="pieza : ${piezasMuseo}" class="coleccion-vitrina"
+                     th:with="obtenida=${#lists.contains(inventarioViajero.![id], pieza.id())}"
+                     th:classappend="${obtenida} ? ' coleccion-vitrina--obtenida' : ''">
+                <span class="coleccion-vitrina__emoji" th:text="${pieza.era().emoji}">🦖</span>
+                <h3 th:text="${pieza.nombre()}">Pieza</h3>
+                <p th:if="${obtenida}" class="coleccion-vitrina__estado">✓ En tu inventario</p>
+                <p th:unless="${obtenida}" class="coleccion-vitrina__estado coleccion-vitrina__estado--falta">
+                    Pendiente — consíguela en aventuras de <span th:text="${pieza.era().nombre}">Era</span>
+                </p>
+            </article>
+        </div>
+    </section>
+
+    <section class="coleccion-empeño" th:if="${!vendibles.isEmpty()}">
+        <h2>💱 Casa de empeños temporal</h2>
+        <p th:if="${enPresente}">Estás en el presente: puedes vender souvenirs por créditos.</p>
+        <p th:unless="${enPresente}" class="aviso-paradoja">
+            ⚠️ Solo puedes vender objetos estando en el presente (2026). Regresa antes de deshacerte de tus tesoros.
+        </p>
+        <ul class="coleccion-venta-lista">
+            <li th:each="obj : ${vendibles}" class="coleccion-venta-item">
+                <div>
+                    <strong th:text="${obj.nombre()}">Objeto</strong>
+                    <span class="coleccion-venta-precio" th:text="'→ ' + ${obj.precioReventa()} + ' créditos'">0</span>
+                    <span th:if="${obj.esConsumible()}" class="coleccion-venta-tag">consumible</span>
+                    <span th:if="${obj.coleccionable()}" class="coleccion-venta-tag">museo</span>
+                </div>
+                <form th:if="${enPresente}" th:action="@{/coleccion/vender}" method="post">
+                    <input type="hidden" name="objetoId" th:value="${obj.id()}"/>
+                    <button type="submit" class="btn btn-secondary btn-sm">Vender</button>
+                </form>
+            </li>
+        </ul>
+    </section>
+
+    <section th:if="${inventarioDetalle.isEmpty()}" class="aventuras-vacio">
+        <p>Tu inventario está vacío. Viaja, juega aventuras y trae souvenirs del pasado (o futuro).</p>
+        <a href="/aventuras" class="btn btn-outline">Ver aventuras</a>
+    </section>
+
+    <p class="coleccion-volver">
+        <a href="/carrito">🛒 Ir al carrito</a> ·
+        <a href="/aventuras">📖 Aventuras</a>
+    </p>
+</main>
+
+<footer th:replace="~{fragmentos/plantilla :: pie}"></footer>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/plantilla :: cabecera('Inicio')}"></head>
+<body>
+<nav th:replace="~{fragmentos/plantilla :: navegacion}"></nav>
+
+<main class="container">
+    <div th:replace="~{fragmentos/plantilla :: alertas}"></div>
+
+    <section class="hero">
+        <div class="hero-content">
+            <p class="hero-badge">IFCD0112 — Viajes a tiempo S.M.L.</p>
+            <h1>Para luego <span class="gradient-text">es tarde</span></h1>
+            <p class="hero-lema">No esperes, ¡SALTA!</p>
+            <p class="hero-subtitle">
+                Billetes oficiales a la era de los dinosaurios, la Antigua Roma o el año 3000.
+                Precios dinámicos según <strong>riesgo de la época</strong> y
+                <strong>combustible temporal</strong>.
+            </p>
+            <p class="hero-posicion">
+                📅 Tu posición temporal:
+                <strong th:text="${posicionViajero}">2026 d.C. (presente)</strong>
+            </p>
+            <p class="hero-present">📍 Línea temporal de referencia: <strong th:text="${anoPresenteFormateado}">2026 d.C.</strong></p>
+            <a href="/logica-temporal" class="btn btn-outline">🧠 Ver la lógica temporal (para curiosos)</a>
+        </div>
+        <div class="hero-visual">
+            <img class="hero-logo" th:src="@{/img/logo.png}" alt="Para luego es tarde — Viajes a tiempo S.M.L."/>
+        </div>
+    </section>
+
+    <section class="catalogo">
+        <h2>Destinos disponibles</h2>
+        <p class="catalogo-hint" th:if="${enPresente}">
+            Estás en el presente: compra primero la <strong>ida</strong> y, una vez en el carrito, podrás añadir la <strong>vuelta</strong>.
+        </p>
+        <p class="catalogo-hint" th:if="${!enPresente}">
+            Estás en una época histórica. Si ya pagaste ida + vuelta, usa el botón <strong>«Viajar al presente»</strong>.
+            Si no, compra la vuelta desde la época en la que te encuentras.
+        </p>
+        <div class="grid-eras">
+            <article th:each="desglose : ${desgloses}" class="era-card"
+                     th:style="'--era-color:' + ${desglose.era.color}"
+                     th:with="tieneVueltaPrepagada=${erasVueltaPrepagada.contains(desglose.era.codigo)},
+                              puedeIda=${enPresente and !carrito.tieneIda(desglose.era)},
+                              puedeComprarVuelta=${(eraViajeroCodigo == desglose.era.codigo or (enPresente and carrito.tieneIda(desglose.era))) and !tieneVueltaPrepagada},
+                              puedeUsarVuelta=${eraViajeroCodigo == desglose.era.codigo and tieneVueltaPrepagada}"
+                     th:classappend="|${!puedeIda and !puedeComprarVuelta and !puedeUsarVuelta ? 'era-card--inactiva ' : ''}era-card--${desglose.era.claseCss}|">
+                <div class="era-emoji" th:text="${desglose.era.emoji}">🦖</div>
+                <h3 th:text="${desglose.era.nombre}">Era</h3>
+                <p class="era-desc" th:text="${desglose.era.descripcion}">Descripción</p>
+                <p class="era-ano" th:text="${desglose.era.anoTemporal.formatear()}">Año</p>
+
+                <div th:replace="~{fragmentos/plantilla :: saborEra(${desglose.era}, true)}"></div>
+
+                <!-- Precios de ida (desde el presente) -->
+                <div class="precio-desglose" th:if="${enPresente}">
+                    <p class="precio-ayuda-general">
+                        <a href="/logica-temporal#precio">¿Cómo se calcula el precio?</a>
+                    </p>
+                    <div class="precio-linea">
+                        <span>Base</span>
+                        <span th:text="${#numbers.formatDecimal(desglose.precioBase, 1, 2)} + ' €'">49.99 €</span>
+                    </div>
+                    <div class="precio-linea combustible">
+                        <span class="precio-linea-label">
+                            ⛽ Combustible
+                            <span th:replace="~{fragmentos/plantilla :: ayudaPrecio('combustible', 'Coste de cruzar años en la línea temporal. Tarifa por millón de años o por año.')}"></span>
+                        </span>
+                        <span th:text="${#numbers.formatDecimal(desglose.combustible, 1, 2)} + ' €'">0 €</span>
+                    </div>
+                    <div class="precio-linea riesgo">
+                        <span class="precio-linea-label">
+                            ⚠️ Riesgo (<span th:text="${desglose.indiceRiesgo}">9.8</span>/10)
+                            <span th:replace="~{fragmentos/plantilla :: ayudaPrecio('riesgo', 'Recargo según lo peligroso o inestable del destino (índice 0–10 × 12,50 €).')}"></span>
+                        </span>
+                        <span th:text="${#numbers.formatDecimal(desglose.riesgo, 1, 2)} + ' €'">0 €</span>
+                    </div>
+                    <div class="precio-linea seguro">
+                        <span class="precio-linea-label">
+                            🦋 Seguro Efecto Mariposa (<span th:text="${desglose.porcentajeSeguroMariposa}">0</span>%)
+                            <span th:replace="~{fragmentos/plantilla :: ayudaPrecio('mariposa', 'Ajuste aleatorio de ±1 % sobre el subtotal. Cambia al recargar la página.')}"></span>
+                        </span>
+                        <span th:text="${#numbers.formatDecimal(desglose.seguroMariposa, 1, 2)} + ' €'">0 €</span>
+                    </div>
+                    <div class="precio-total">
+                        <span>Ida desde</span>
+                        <span th:text="${#numbers.formatDecimal(desglose.total, 1, 2)} + ' €'">0 €</span>
+                    </div>
+                </div>
+
+                <!-- Precios de vuelta (con ida en carrito o ya en la época) -->
+                <div class="precio-desglose" th:if="${puedeComprarVuelta and (enPresente or eraViajeroCodigo == desglose.era.codigo)}"
+                     th:with="vuelta=${desglosesVuelta[desglose.era.codigo]}">
+                    <div class="precio-linea">
+                        <span>Base</span>
+                        <span th:text="${#numbers.formatDecimal(vuelta.precioBase, 1, 2)} + ' €'">49.99 €</span>
+                    </div>
+                    <div class="precio-linea combustible">
+                        <span class="precio-linea-label">
+                            ⛽ Combustible
+                            <span th:replace="~{fragmentos/plantilla :: ayudaPrecio('combustible', 'Coste de cruzar años en la línea temporal. Tarifa por millón de años o por año.')}"></span>
+                        </span>
+                        <span th:text="${#numbers.formatDecimal(vuelta.combustible, 1, 2)} + ' €'">0 €</span>
+                    </div>
+                    <div class="precio-total">
+                        <span>Vuelta al presente</span>
+                        <span th:text="${#numbers.formatDecimal(vuelta.total, 1, 2)} + ' €'">0 €</span>
+                    </div>
+                </div>
+
+                <div class="era-actions">
+                    <a th:href="@{/era/{codigo}(codigo=${desglose.era.codigo})}" class="btn btn-primary">Ver billetes</a>
+
+                    <form th:if="${puedeIda}" th:action="@{/carrito/agregar}" method="post" class="inline-form">
+                        <input type="hidden" name="tipo" value="IDA"/>
+                        <input type="hidden" name="era" th:value="${desglose.era}"/>
+                        <input type="hidden" name="origen" value="/"/>
+                        <button type="submit" class="btn btn-secondary">+ Añadir ida al carrito</button>
+                    </form>
+
+                    <form th:if="${puedeUsarVuelta}" th:action="@{/viaje/usar-vuelta}" method="post" class="inline-form">
+                        <input type="hidden" name="era" th:value="${desglose.era}"/>
+                        <button type="submit" class="btn btn-primary">⏳ Viajar al presente</button>
+                    </form>
+
+                    <form th:if="${puedeComprarVuelta and !carrito.tieneVuelta(desglose.era)}"
+                          th:action="@{/carrito/agregar}" method="post" class="inline-form">
+                        <input type="hidden" name="tipo" value="VUELTA"/>
+                        <input type="hidden" name="era" th:value="${desglose.era}"/>
+                        <input type="hidden" name="origen" value="/"/>
+                        <button type="submit" class="btn btn-secondary">+ Añadir vuelta al carrito</button>
+                    </form>
+
+                    <p th:if="${enPresente and carrito.tieneIda(desglose.era) and carrito.tieneVuelta(desglose.era)}" class="aviso-paradoja">
+                        ✓ Ida y vuelta en el carrito
+                    </p>
+                    <p th:if="${!enPresente and eraViajeroCodigo != desglose.era.codigo}" class="aviso-paradoja">
+                        No estás en esta época
+                    </p>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="info-paradojas">
+        <h2>⚠️ Aviso sobre paradojas temporales</h2>
+        <p>
+            Solo puedes comprar <strong>ida</strong> desde el presente (una por destino).
+            La <strong>vuelta</strong> se habilita al añadir la ida al carrito o tras haber viajado a la época.
+        </p>
+    </section>
+
+    <section class="funcionalidades">
+        <h2>Cómo funciona el sistema</h2>
+        <div class="grid-funciones">
+            <article class="funcion-card">
+                <h3>💰 Precio dinámico</h3>
+                <p>Cada billete suma <strong>precio base</strong> + <strong>combustible temporal</strong> (distancia en años) + <strong>recargo por riesgo histórico</strong> de la época + <strong>seguro Efecto Mariposa</strong> (±1 %).</p>
+                <p><a href="/logica-temporal#precio" class="precio-ayuda-link">¿Qué es cada concepto?</a></p>
+            </article>
+            <article class="funcion-card">
+                <h3>🌀 Anti-paradojas</h3>
+                <p>Validación automática: no puedes volver antes de haber salido, ni encadenar viajes fuera de orden cronológico.</p>
+            </article>
+            <article class="funcion-card">
+                <h3>🎫 Solo ida</h3>
+                <p>Puedes viajar sin vuelta, pero el carrito aplica un <strong>recargo con descargo legal</strong> por el riesgo de quedar atrapado en el pasado (o futuro).</p>
+            </article>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragmentos/plantilla :: pie}"></footer>
+</body>
+</html>

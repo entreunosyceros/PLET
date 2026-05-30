@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/plantilla :: cabecera(${escena.titulo()})}"></head>
+<body class="pagina-aventura" th:classappend="' pagina-aventura--' + ${escena.era().claseCss}">
+<nav th:replace="~{fragmentos/plantilla :: navegacion}"></nav>
+
+<main class="container">
+    <div th:replace="~{fragmentos/plantilla :: alertas}"></div>
+    <div th:replace="~{fragmentos/plantilla :: panelViajero}"></div>
+
+    <a href="/aventuras" class="back-link">← Volver a aventuras</a>
+
+    <article class="librojuego" th:style="'--era-color:' + ${escena.era().color}">
+        <header class="librojuego__cabecera">
+            <span class="librojuego__emoji" th:text="${escena.era().emoji}">🦖</span>
+            <div>
+                <p class="librojuego__serie">Elige tu propia aventura · <span th:text="${escena.era().nombre}">Era</span></p>
+                <h1 th:text="${escena.titulo()}">Título</h1>
+            </div>
+        </header>
+
+        <div class="librojuego__texto">
+            <p th:text="${escena.parrafoIntroduccion()}">Introducción…</p>
+        </div>
+
+        <section class="librojuego__decisiones">
+            <h2>¿Qué haces?</h2>
+            <form th:each="opcion : ${escena.opciones()}"
+                  th:action="@{/aventuras/{id}(id=${escena.id()})}"
+                  method="post"
+                  class="librojuego__opcion">
+                <input type="hidden" name="opcionId" th:value="${opcion.id()}"/>
+                <button type="submit" class="btn btn-opcion-aventura">
+                    <span class="librojuego__opcion-letra">▸</span>
+                    <span th:text="${opcion.textoBoton()}">Opción</span>
+                </button>
+            </form>
+        </section>
+    </article>
+</main>
+
+<footer th:replace="~{fragmentos/plantilla :: pie}"></footer>
+</body>
+</html>

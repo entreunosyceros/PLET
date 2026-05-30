@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos/plantilla :: cabecera('Resultado')}"></head>
+<body class="pagina-aventura-resultado"
+      th:with="res=${resultadoAventura},
+               efectos=${res.opcion().efectos()}">
+<nav th:replace="~{fragmentos/plantilla :: navegacion}"></nav>
+
+<main class="container">
+    <div th:replace="~{fragmentos/plantilla :: panelViajero}"></div>
+
+    <article class="librojuego librojuego--resultado"
+             th:style="'--era-color:' + ${res.escena().era().color}"
+             th:classappend="' librojuego--' + ${res.escena().era().claseCss}">
+        <header class="librojuego__cabecera">
+            <span class="librojuego__emoji" th:text="${res.escena().era().emoji}">🦖</span>
+            <div>
+                <p class="librojuego__serie">Fin del capítulo</p>
+                <h1 th:text="${res.escena().titulo()}">Título</h1>
+            </div>
+        </header>
+
+        <div class="librojuego__texto librojuego__texto--resultado">
+            <p th:text="${res.opcion().resultadoTexto()}">Resultado…</p>
+        </div>
+
+        <aside class="librojuego__consecuencias">
+            <h2>Consecuencias</h2>
+            <ul>
+                <li th:if="${efectos.cambioCreditos() != 0}">
+                    💰 Créditos:
+                    <strong th:text="${efectos.cambioCreditos() > 0 ? '+' + efectos.cambioCreditos() : efectos.cambioCreditos()}">0</strong>
+                    (saldo actual: <span th:text="${res.creditosTrasEleccion()}">0</span>)
+                </li>
+                <li th:if="${efectos.objetoInventario().isPresent()}">
+                    🎒 Objeto obtenido: <strong th:text="${efectos.objetoInventario().get()}">Objeto</strong>
+                </li>
+                <li th:if="${efectos.descuentoProximaCompraPorcentaje() > 0}">
+                    🏷️ Descuento del <strong th:text="${efectos.descuentoProximaCompraPorcentaje()} + '%'">0%</strong> en tu próxima compra
+                </li>
+                <li th:if="${efectos.activarParadoja()}">
+                    🌀 <strong>Paradoja temporal activada</strong> — la agencia no se hace responsable
+                </li>
+                <li th:if="${efectos.regresarAlPresente()}">
+                    ⏳ Has activado el retorno de emergencia al presente
+                </li>
+                <li th:if="${efectos.cambioCreditos() == 0 and efectos.objetoInventario().isEmpty() and efectos.descuentoProximaCompraPorcentaje() == 0 and !efectos.activarParadoja() and !efectos.regresarAlPresente()}">
+                    ✓ Sin cambios mecánicos — solo las cicatrices emocionales
+                </li>
+            </ul>
+        </aside>
+
+        <div class="librojuego__acciones">
+            <a href="/aventuras" class="btn btn-primary">Ver más aventuras</a>
+            <a th:if="${!enPresente}" th:href="@{/era/{c}(c=${eraViajeroCodigo})}" class="btn btn-outline">Ficha de era</a>
+            <a th:if="${enPresente}" href="/" class="btn btn-outline">Catálogo</a>
+        </div>
+    </article>
+</main>
+
+<footer th:replace="~{fragmentos/plantilla :: pie}"></footer>
+</body>
+</html>

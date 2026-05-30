@@ -1,0 +1,62 @@
+# Maven: compilación y dependencias descargadas (se regeneran con mvn)
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# Wrapper de Maven (el .jar no se versiona; el .properties sí)
+.mvn/wrapper/maven-wrapper.jar
+
+# Bytecode suelto fuera de target/
+*.class
+
+# Logs y salida de tests
+*.log
+logs/
+surefire-reports/
+test-output/
+
+# IDEs y editores
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.factorypath
+.vscode/
+*.swp
+*.swo
+*~
+
+# Cursor (config local del editor)
+.cursor/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Variables de entorno y secretos (no subir credenciales)
+.env
+.env.*
+!.env.example
+
+# Spring Boot / DevTools locales
+.spring-boot-devtools.properties
+
+# Paquetes empaquetados generados manualmente
+*.jar
+*.war
+*.ear
+!**/src/main/**/lib/*.jar
+
+# JVM crash dumps
+hs_err_pid*
+replay_pid*

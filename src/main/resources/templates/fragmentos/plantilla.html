@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="cabecera(titulo)">
+    <!-- Metadatos y hoja de estilos común a todas las páginas -->
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${titulo} + ' | Para luego es tarde — Viajes a tiempo S.M.L.'">Para luego es tarde — Viajes a tiempo S.M.L.</title>
+    <link rel="icon" type="image/png" th:href="@{/img/logo.png}"/>
+    <link rel="apple-touch-icon" th:href="@{/img/logo.png}"/>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+</head>
+
+<nav th:fragment="navegacion" class="navbar">
+    <!-- cantidadCarrito viene de AtributosGlobales (@ControllerAdvice) -->
+    <a href="/" class="logo">
+        <img class="logo-img" th:src="@{/img/logo.png}" alt="Para luego es tarde — Viajes a tiempo S.M.L."/>
+        <span class="logo-text">
+            <span class="logo-name">Para luego es tarde</span>
+            <span class="logo-sub">Viajes a tiempo S.M.L.</span>
+        </span>
+    </a>
+    <div class="nav-links">
+        <div class="nav-posicion" th:classappend="${enPresente} ? ' nav-posicion--presente' : ' nav-posicion--viaje'">
+            <span class="nav-posicion__label">Estás en</span>
+            <strong class="nav-posicion__ano" th:text="${posicionViajero}">2026 d.C. (presente)</strong>
+        </div>
+        <a href="/">🗺️ Catálogo</a>
+        <a href="/aventuras" class="nav-aventuras">
+            📖 Aventuras
+            <span th:if="${aventurasDisponibles > 0}" class="carrito-badge" th:text="${aventurasDisponibles}">0</span>
+        </a>
+        <a href="/coleccion">🏛️ Colección</a>
+        <a href="/logica-temporal">🧠 Lógica temporal</a>
+        <a href="/carrito" class="carrito-link">
+            🛒 Carrito
+            <span th:if="${cantidadCarrito > 0}" class="carrito-badge" th:text="${cantidadCarrito}">0</span>
+        </a>
+    </div>
+</nav>
+
+<div th:fragment="alertas" class="alertas-flash">
+    <!-- Mensajes flash tras redirecciones POST (éxito o error de paradoja) -->
+    <div th:if="${mensajeExito}" class="alert alert-success" th:text="${mensajeExito}"></div>
+    <div th:if="${mensajeError}" class="alert alert-error" th:text="${mensajeError}"></div>
+</div>
+
+<footer th:fragment="pie" class="footer">
+    <p><strong>Para luego es tarde — Viajes a tiempo S.M.L.</strong></p>
+    <p class="footer-lema">No esperes, ¡SALTA!</p>
+    <p class="footer-small">IFCD0112 — Proyecto educativo Java + Spring Boot. Las paradojas temporales son responsabilidad del viajero.</p>
+</footer>
+
+<!-- Enlace «¿Qué es esto?» a la explicación en /logica-temporal#ancla -->
+<a th:fragment="ayudaPrecio(ancla, tooltip)"
+   th:href="@{/logica-temporal} + '#' + ${ancla}"
+   class="ayuda-precio"
+   th:title="${tooltip}"
+   th:attr="aria-label=${tooltip}">
+    <span class="ayuda-precio__icon" aria-hidden="true">?</span>
+    <span class="ayuda-precio__text">¿Qué es esto?</span>
+</a>
+
+<!-- Guía de humor y normas específicas de cada era -->
+<aside th:fragment="saborEra(era, compacto)"
+       class="era-sabor"
+       th:classappend="' era-sabor--' + ${era.claseCss} + (${compacto} ? ' era-sabor--compacto' : '')">
+    <p class="era-sabor__lema" th:text="'«' + ${era.lema} + '»'">«Lema»</p>
+
+    <div th:if="${!compacto}" class="era-sabor__grid">
+        <div class="era-sabor__bloque era-sabor__bloque--advertencias">
+            <h4 class="era-sabor__titulo">⚠️ Advertencias</h4>
+            <ul class="era-sabor__lista">
+                <li th:each="item : ${era.advertencias}" th:text="${item}">Advertencia</li>
+            </ul>
+        </div>
+        <div class="era-sabor__bloque era-sabor__bloque--curiosidades">
+            <h4 class="era-sabor__titulo">🔍 Curiosidades</h4>
+            <ul class="era-sabor__lista">
+                <li th:each="item : ${era.curiosidades}" th:text="${item}">Curiosidad</li>
+            </ul>
+        </div>
+        <div class="era-sabor__bloque era-sabor__bloque--restricciones">
+            <h4 class="era-sabor__titulo">🚫 Restricciones</h4>
+            <ul class="era-sabor__lista">
+                <li th:each="item : ${era.restricciones}" th:text="${item}">Restricción</li>
+            </ul>
+        </div>
+    </div>
+
+    <ul th:if="${compacto}" class="era-sabor__destacados">
+        <li class="era-sabor__destacado era-sabor__destacado--advertencia"
+            th:text="${era.advertencias[0]}">Advertencia</li>
+        <li class="era-sabor__destacado era-sabor__destacado--curiosidad"
+            th:text="${era.curiosidades[0]}">Curiosidad</li>
+        <li class="era-sabor__destacado era-sabor__destacado--restriccion"
+            th:text="${era.restricciones[0]}">Restricción</li>
+    </ul>
+</aside>
+
+<!-- Créditos, inventario y paradojas del libro-juego -->
+<div th:fragment="panelViajero" class="panel-viajero">
+    <div class="panel-viajero__stat">
+        <span class="panel-viajero__label">🎖️ Título</span>
+        <strong th:text="${tituloAgente}">Viajero temporal</strong>
+    </div>
+    <div class="panel-viajero__stat">
+        <span class="panel-viajero__label">💰 Créditos</span>
+        <strong th:text="${creditosViajero}">0</strong>
+    </div>
+    <div class="panel-viajero__stat" th:if="${descuentoAventuraPorcentaje > 0}">
+        <span class="panel-viajero__label">🏷️ Cupón activo</span>
+        <strong th:text="${descuentoAventuraPorcentaje} + '%'">0%</strong>
+    </div>
+    <div class="panel-viajero__stat" th:if="${descuentoPermanentePorcentaje > 0}">
+        <span class="panel-viajero__label">⭐ Veterano</span>
+        <strong th:text="'−' + ${descuentoPermanentePorcentaje} + '% billetes'">−5%</strong>
+    </div>
+    <div class="panel-viajero__stat panel-viajero__stat--inventario" th:if="${!inventarioViajero.isEmpty()}">
+        <span class="panel-viajero__label">🎒 Inventario</span>
+        <span th:each="obj, stat : ${inventarioViajero}"
+              th:text="${obj.nombre() + (stat.last ? '' : ', ')}">Objeto</span>
+    </div>
+    <div class="panel-viajero__paradoja" th:if="${paradojaActiva}">
+        🌀 Paradoja temporal activa — procede con cautela
+    </div>
+</div>
+</html>
