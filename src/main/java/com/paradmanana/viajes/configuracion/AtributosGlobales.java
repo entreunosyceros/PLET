@@ -113,6 +113,11 @@ public class AtributosGlobales {
         return servicioAventuras.obtenerProgresoRangoCredito();
     }
 
+    @ModelAttribute("viajeroSinExperiencia")
+    public boolean viajeroSinExperiencia() {
+        return servicioAventuras.esViajeroSinExperiencia();
+    }
+
     @ModelAttribute("salonVipDesbloqueado")
     public boolean salonVipDesbloqueado() {
         return servicioAventuras.tieneSalonVip();

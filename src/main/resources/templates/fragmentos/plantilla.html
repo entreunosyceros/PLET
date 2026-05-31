@@ -152,7 +152,17 @@
         <span class="panel-viajero__label">💰 <span th:text="${monedaNombre}">Gallifantes Temporales</span></span>
         <strong th:text="${creditosViajero} + ' ' + ${monedaAbrev}">0 GT</strong>
     </div>
-    <div class="panel-viajero__rango" th:if="${rangoCredito.siguiente().isPresent()}">
+    <div class="panel-viajero__rango panel-viajero__rango--pendiente" th:if="${viajeroSinExperiencia and enPresente}">
+        <div class="panel-viajero__rango-cabecera">
+            <span class="panel-viajero__label">📈 Rango temporal</span>
+            <strong>Sin expedición registrada</strong>
+        </div>
+        <p class="panel-viajero__rango-meta">
+            Todavía estás en el presente. Compra un billete de ida, viaja a una época y juega aventuras
+            para acumular <span th:text="${monedaAbrev}">GT</span> y desbloquear rangos.
+        </p>
+    </div>
+    <div class="panel-viajero__rango" th:if="${rangoCredito.siguiente().isPresent() and !(viajeroSinExperiencia and enPresente)}">
         <div class="panel-viajero__rango-cabecera">
             <span class="panel-viajero__label">📈 Rango temporal</span>
             <strong th:text="${rangoCredito.titulo}">Viajero temporal</strong>
@@ -169,7 +179,7 @@
         <p class="panel-viajero__rango-perk" th:if="${rangoCredito.siguiente().get().descripcionPerk != null}"
            th:text="'🔓 ' + ${rangoCredito.siguiente().get().descripcionPerk}">Próximo perk</p>
     </div>
-    <div class="panel-viajero__rango panel-viajero__rango--max" th:if="${!rangoCredito.siguiente().isPresent()}">
+    <div class="panel-viajero__rango panel-viajero__rango--max" th:if="${!rangoCredito.siguiente().isPresent() and !(viajeroSinExperiencia and enPresente)}">
         <span class="panel-viajero__label">📈 Rango temporal</span>
         <strong th:text="${rangoCredito.titulo}">Leyenda</strong>
         <p class="panel-viajero__rango-perk" th:text="${rangoCredito.descripcionPerk}">Máximo rango</p>

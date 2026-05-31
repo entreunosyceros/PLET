@@ -142,6 +142,16 @@ class ServicioAventurasTest {
     }
 
     @Test
+    void viajeroSinExperienciaSoloAlInicio() {
+        assertTrue(aventuras.esViajeroSinExperiencia());
+
+        posicion.teletransportarA(Era.DINOSAURIOS);
+        aventuras.elegir("dino-mosquito", "dejar-picar");
+
+        assertFalse(aventuras.esViajeroSinExperiencia());
+    }
+
+    @Test
     void rangoCreditoCambiaTituloAlAlcanzarUmbral() {
         var aventurasRico = new ServicioAventuras(posicion, 150);
         assertEquals("Carterista temporal certificado", aventurasRico.obtenerTituloAgente());

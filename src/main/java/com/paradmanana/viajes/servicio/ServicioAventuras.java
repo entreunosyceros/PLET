@@ -130,6 +130,15 @@ public class ServicioAventuras {
         return RangoCredito.progresoHaciaSiguiente(creditos);
     }
 
+    /** Sin GT, inventario ni aventuras jugadas: aún no ha empezado la economía temporal. */
+    public boolean esViajeroSinExperiencia() {
+        return creditos == 0
+                && inventario.isEmpty()
+                && escenasCompletadas.isEmpty()
+                && descuentoCompraPorcentaje == 0
+                && !paradojaActiva;
+    }
+
     public boolean tieneSalonVip() {
         return obtenerRangoCredito().tieneSalonVip();
     }

@@ -1565,6 +1565,10 @@ body.salto-temporal-activo {
     font-style: italic;
 }
 
+.panel-viajero__rango--pendiente .panel-viajero__rango-meta {
+    font-style: italic;
+}
+
 .panel-viajero__rango--max .panel-viajero__rango-perk {
     color: #ffd700;
 }
